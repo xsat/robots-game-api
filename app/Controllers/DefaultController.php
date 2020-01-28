@@ -18,22 +18,10 @@ class DefaultController extends AbstractController
     {
         return $this->json(
             [
-                'type' => '1',
+                'type' => 'error',
                 'message' => 'Not Found',
             ],
-        );
-    }
-
-    /**
-     * @param string $test
-     * @return Response
-     */
-    public function test(string $test): Response
-    {
-        return $this->json(
-            [
-                'test' => $test,
-            ],
+            404
         );
     }
 }

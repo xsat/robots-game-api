@@ -44,7 +44,7 @@ class Application
         $this->request = Request::createFromGlobals();
         $this->response = new Response();
         $this->loader = new YamlFileLoader(
-            new FileLocator(dirname(__DIR__))
+            new FileLocator(__DIR__ . '/../config')
         );
     }
 
@@ -79,7 +79,7 @@ class Application
 
             // @todo Redesign this solution
             $controller = explode('::', $arguments['_controller']);
-            $controller[0] = new $controller[0]();
+            $controller[0] = new $controller[0]($this->request);
             unset($arguments['_controller']);
             unset($arguments['_route']);
             $arguments = array_values($arguments);
