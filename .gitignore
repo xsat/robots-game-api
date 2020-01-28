@@ -1,5 +1,6 @@
 /vendor
 /.idea
-Homestead.json
-Homestead.yaml
-.env
+/var/
+/.env.local
+/.env.local.php
+/.env.*.local
