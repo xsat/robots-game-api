@@ -1,8 +1,12 @@
 index:
   path: /
-  controller: App\Controller\DefaultController::index
+  controller: App\Controllers\DefaultController::index
 
 api_players_create:
   path: /v1/players
-  controller: App\Controller\DefaultController::index
+  controller: App\Controllers\DefaultController::index
   methods: [POST, GET]
+
+api_players_update:
+  path: /v1/players/{playerId}/{test}
+  controller: App\Controllers\DefaultController::index

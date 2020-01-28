@@ -9,10 +9,4 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 
 use App\Application;
 
-try {
-    (new Application())->run();
-} catch (Exception $exception) {
-    echo get_class($exception), PHP_EOL;
-    echo $exception->getMessage(), PHP_EOL;
-    echo $exception->getTraceAsString();
-}
+(new Application())->run();
