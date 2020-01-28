@@ -1,0 +1,8 @@
+index:
+  path: /
+  controller: App\Controller\DefaultController::index
+
+api_players_create:
+  path: /v1/players
+  controller: App\Controller\DefaultController::index
+  methods: [POST, GET]

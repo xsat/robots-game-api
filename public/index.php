@@ -12,6 +12,7 @@ use App\Application;
 try {
     (new Application())->run();
 } catch (Exception $exception) {
+    echo get_class($exception), PHP_EOL;
     echo $exception->getMessage(), PHP_EOL;
     echo $exception->getTraceAsString();
 }
