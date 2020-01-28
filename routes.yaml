@@ -8,5 +8,5 @@ api_players_create:
   methods: [POST, GET]
 
 api_players_update:
-  path: /v1/players/{playerId}/{test}
-  controller: App\Controllers\DefaultController::index
+  path: /v1/players/{test}
+  controller: App\Controllers\DefaultController::test

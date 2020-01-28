@@ -82,6 +82,7 @@ class Application
             $controller[0] = new $controller[0]();
             unset($arguments['_controller']);
             unset($arguments['_route']);
+            $arguments = array_values($arguments);
             $this->response = $controller(...$arguments);
         } catch (Exception $e) {
             $renderException($e);
