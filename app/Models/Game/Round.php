@@ -23,6 +23,11 @@ class Round implements JsonSerializable
     private array $actions = [];
 
     /**
+     * @var bool
+     */
+    private bool $ended = false;
+
+    /**
      * @var string|null
      */
     private ?string $dateStarted = null;
@@ -65,6 +70,22 @@ class Round implements JsonSerializable
     }
 
     /**
+     * @return bool
+     */
+    public function isEnded(): bool
+    {
+        return $this->ended;
+    }
+
+    /**
+     * @param bool $ended
+     */
+    public function setEnded(bool $ended): void
+    {
+        $this->ended = $ended;
+    }
+
+    /**
      * @return string|null
      */
     public function getDateStarted(): ?string
@@ -104,6 +125,7 @@ class Round implements JsonSerializable
         return [
             'number' => $this->getNumber(),
             'actions' => [],
+            'isEnded' => $this->isEnded(),
             'dateStarted' => $this->getDateStarted(),
             'dateEnded' => $this->getDateEnded(),
         ];

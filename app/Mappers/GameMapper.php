@@ -5,8 +5,13 @@ declare(strict_types=1);
 namespace App\Mappers;
 
 use App\Models\Game;
+use App\Models\Game\Player;
+use App\Models\Game\Round;
+use App\Models\Game\Round\Action;
 use MongoDB\BSON\ObjectId;
+use MongoDB\BSON\UTCDateTime;
 use MongoDB\Client;
+use MongoDB\Model\BSONDocument;
 
 /**
  * Class GameMapper
@@ -67,11 +72,47 @@ class GameMapper
     private function convert(Game $game): array
     {
         return [
-            'players' => [],
-            'rounds' => [],
+            'players' => array_map(
+                function (Player $player): array {
+                    return [
+                        'playerId' => new ObjectId($player->getPlayerId()),
+                        'type' => $player->getHealth(),
+                        'winner' => $player->isWinner(),
+                    ];
+                },
+                $game->getPlayers()
+            ),
+            'rounds' => array_map(
+                function (Round $round): array {
+                    return [
+                        'number' => $round->getNumber(),
+                        'actions' => array_map(
+                            function (Action $action): array {
+                                return [
+                                    'playerId' => new ObjectId(
+                                        $action->getPlayerId()
+                                    ),
+                                    'type' => $action->getType(),
+                                    'damage' => $action->getDamage(),
+                                    'speed' => $action->getSpeed(),
+                                ];
+                            },
+                            $round->getActions()
+                        ),
+                        'is_ended' => $round->isEnded(),
+                        'date_started' => new UTCDateTime(
+                            $round->getDateStarted()
+                        ),
+                        'date_ended' => new UTCDateTime(
+                            $round->getDateStarted()
+                        ),
+                    ];
+                },
+                $game->getRounds()
+            ),
             'is_ended' => $game->isEnded(),
-            'date_started' => $game->getDateStarted(),
-            'date_ended' => $game->getDateEnded(),
+            'date_started' => new UTCDateTime($game->getDateStarted()),
+            'date_ended' => new UTCDateTime($game->getDateStarted()),
         ];
     }
 
@@ -82,6 +123,7 @@ class GameMapper
      */
     public function findById(string $id): ?Game
     {
+        /** @var BSONDocument|null $result */
         $result = $this->client->battle->games->findOne(
             ['_id' => new ObjectId($id)]
         );
@@ -90,12 +132,20 @@ class GameMapper
             return null;
         }
 
+
         $game = new Game();
-        $game->setGameId((string)$result['_id']);
-        $game->setEnded($result['is_ended']);
-        $game->setDateStarted($result['date_started']);
-        $game->setDateEnded($result['date_ended']);
+        $this->assign($result, $game);
 
         return $game;
+    }
+
+    /**
+     * @param BSONDocument $document
+     * @param Game $game
+     */
+    private function assign(BSONDocument $document, Game $game): void
+    {
+        $game->setGameId((string)$document['_id']);
+        $game->setEnded($document['is_ended']);
     }
 }

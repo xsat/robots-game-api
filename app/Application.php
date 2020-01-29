@@ -81,7 +81,6 @@ class Application
                 )
             ))->matchRequest($this->request);
 
-
             /**
              * @todo Redesign this solution
              *

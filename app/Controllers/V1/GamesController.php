@@ -8,6 +8,9 @@ use App\Controllers\AbstractController;
 use App\Exceptions\HttpNotFoundException;
 use App\Mappers\GameMapper;
 use App\Models\Game;
+use App\Models\Game\Player;
+use App\Models\Game\Round;
+use App\Models\Game\Round\Action;
 use MongoDB\Client;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
@@ -22,7 +25,25 @@ class GamesController extends AbstractController
      */
     public function create(): Response
     {
+        $player = new Player();
+        $player->setPlayerId('5e31e0fd111c00006c001fdc');
+        $player->setHealth(100);
+
         $game = new Game();
+        $game->setPlayers([$player]);
+
+        $action = new Action();
+        $action->setPlayerId('5e31e0fd111c00006c001fdc');
+        $action->setType('attack');
+        $action->setDamage(10);
+        $action->setSpeed(10);
+
+        $round = new Round();
+        $round->setNumber(1);
+        $round->setActions([$action]);
+
+        $game->setRounds([$round]);
+
         if (!(new GameMapper(new Client()))->create($game)) {
             throw new RuntimeException('Game was not created.');
         }
