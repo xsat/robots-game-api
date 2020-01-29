@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
+use App\Exceptions\HttpNotFoundException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -13,15 +14,11 @@ class DefaultController extends AbstractController
 {
     /**
      * @return Response
+     *
+     * @throws HttpNotFoundException
      */
     public function index(): Response
     {
-        return $this->json(
-            [
-                'type' => 'error',
-                'message' => 'Not Found',
-            ],
-            404
-        );
+        throw new HttpNotFoundException('Page was not found.');
     }
 }

@@ -25,7 +25,6 @@ class PlayersController extends AbstractController
         $player = new Player();
         $player->setUsername('xsat');
         $player->setPassword(password_hash('123456', PASSWORD_BCRYPT));
-
         if (!(new PlayerMapper(new Client()))->create($player)) {
             throw new RuntimeException('Player was not created.');
         }
@@ -43,7 +42,6 @@ class PlayersController extends AbstractController
     public function show(string $playerId): Response
     {
         $player = (new PlayerMapper(new Client()))->findById($playerId);
-
         if ($player === null) {
             throw new HttpNotFoundException('Player was not found.');
         }
@@ -68,7 +66,6 @@ class PlayersController extends AbstractController
         }
 
         $player->setUsername('updated');
-
         if (!$playerMapper->update($player)) {
             throw new RuntimeException('Player was not updated.');
         }

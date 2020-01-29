@@ -56,7 +56,7 @@ class PlayerMapper
             ['$set' => $this->convert($player)]
         );
 
-        return $result->getModifiedCount() != 0;
+        return $result->getMatchedCount() != 0;
     }
 
     /**
