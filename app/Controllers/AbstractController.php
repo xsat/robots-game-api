@@ -40,14 +40,14 @@ abstract class AbstractController
     }
 
     /**
-     * @param array|null $data
+     * @param mixed $data
      * @param int $status
      * @param array $headers
      *
      * @return Response
      */
     protected function json(
-        array $data = null,
+        $data = null,
         int $status = 200,
         array $headers = []
     ): Response {

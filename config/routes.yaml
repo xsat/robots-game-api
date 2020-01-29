@@ -6,3 +6,13 @@ api_players_create:
   path: /v1/players
   controller: App\Controllers\V1\PlayersController::create
   methods: [POST]
+
+api_players_show:
+  path: /v1/players/{playerId}
+  controller: App\Controllers\V1\PlayersController::show
+  methods: [GET]
+
+api_players_update:
+  path: /v1/players/{playerId}
+  controller: App\Controllers\V1\PlayersController::update
+  methods: [PUT]

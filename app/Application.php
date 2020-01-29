@@ -4,6 +4,11 @@ declare(strict_types=1);
 
 namespace App;
 
+use App\Controllers\DefaultController;
+use App\Controllers\V1\Players\AchievementsController;
+use App\Controllers\V1\Players\GamesController;
+use App\Controllers\V1\PlayersController;
+use App\Exceptions\HttpNotFoundException;
 use Exception;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -77,7 +82,19 @@ class Application
                 )
             ))->matchRequest($this->request);
 
-            // @todo Redesign this solution
+
+            /**
+             * @todo Redesign this solution
+             *
+             * @uses DefaultController::index
+             * @uses PlayersController::create
+             * @uses PlayersController::show
+             * @uses PlayersController::update
+             * @uses AchievementsController::show
+             * @uses GamesController::create
+             * @uses GamesController::show
+             * @uses GamesController::update
+             */
             $controller = explode('::', $arguments['_controller']);
             $controller[0] = new $controller[0]($this->request);
             unset($arguments['_controller']);
@@ -112,10 +129,26 @@ class Application
     {
         $this->response = new JsonResponse(
             [
-                'type' => 'error',
+                'type' => $this->getType($throwable),
                 'message' => $throwable->getMessage(),
             ],
             $throwable->getCode() ?: 500
         );
+    }
+
+    /**
+     * @param Throwable $throwable
+     *
+     * @return string
+     */
+    private function getType(Throwable $throwable): string
+    {
+        $className = get_class($throwable);
+
+        if ($className === HttpNotFoundException::class) {
+            return 'not-found';
+        }
+
+        return 'internal-server-error';
     }
 }
