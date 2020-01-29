@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Models\Player\Game;
+namespace App\Models\Game;
 
 use JsonSerializable;
 
@@ -79,6 +79,10 @@ class Player implements JsonSerializable
      */
     public function jsonSerialize(): ?array
     {
-        return null;
+        return [
+            'playerId' => $this->getPlayerId(),
+            'health' => $this->getHealth(),
+            'isWinner' => $this->isWinner(),
+        ];
     }
 }

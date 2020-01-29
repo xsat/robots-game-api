@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Controllers\V1\Players;
+namespace App\Controllers\V1;
 
-use Symfony\Component\HttpFoundation\Response;
 use App\Controllers\AbstractController;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class GamesController
@@ -13,44 +13,36 @@ use App\Controllers\AbstractController;
 class GamesController extends AbstractController
 {
     /**
-     * @param string $playerId
-     *
      * @return Response
      */
-    public function create(string $playerId): Response
+    public function create(): Response
     {
-        return $this->json(
-            ['playerId' => $playerId,]
-        );
+        return $this->json();
     }
 
     /**
-     * @param string $playerId
      * @param string $gameId
      *
      * @return Response
      */
-    public function show(string $playerId, string $gameId): Response
+    public function show(string $gameId): Response
     {
         return $this->json(
             [
-                'playerId' => $playerId,
                 'gameId' => $gameId,
             ]
         );
     }
 
     /**
-     * @param string $playerId
      * @param string $gameId
      *
      * @return Response
      */
-    public function update(string $playerId, string $gameId): Response
+    public function update(string $gameId): Response
     {
         return $this->json(
             [
-                'playerId' => $playerId,
                 'gameId' => $gameId,
             ]
         );

@@ -2,10 +2,10 @@
 
 declare(strict_types=1);
 
-namespace App\Models\Player;
+namespace App\Models;
 
-use App\Models\Player\Game\Player;
-use App\Models\Player\Game\Round;
+use App\Models\Game\Player;
+use App\Models\Game\Round;
 use JsonSerializable;
 
 /**
@@ -144,6 +144,13 @@ class Game implements JsonSerializable
      */
     public function jsonSerialize(): ?array
     {
-        return null;
+        return [
+            'gameId' => $this->getGameId(),
+            'players' => [],
+            'rounds' => [],
+            'isEnded' => $this->isEnded(),
+            'dateStarted' => $this->getDateStarted(),
+            'dateEnded' => $this->getDateEnded(),
+        ];
     }
 }

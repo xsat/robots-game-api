@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace App\Models\Player\Game;
+namespace App\Models\Game;
 
-use App\Models\Player\Game\Round\Action;
+use App\Models\Game\Round\Action;
 use JsonSerializable;
 
 /**
@@ -101,6 +101,11 @@ class Round implements JsonSerializable
      */
     public function jsonSerialize(): ?array
     {
-        return null;
+        return [
+            'number' => $this->getNumber(),
+            'actions' => [],
+            'dateStarted' => $this->getDateStarted(),
+            'dateEnded' => $this->getDateEnded(),
+        ];
     }
 }

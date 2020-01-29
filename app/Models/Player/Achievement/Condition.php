@@ -4,12 +4,10 @@ declare(strict_types=1);
 
 namespace App\Models\Player\Achievement;
 
-use JsonSerializable;
-
 /**
  * Class Condition
  */
-class Condition implements JsonSerializable
+class Condition
 {
     /**
      * @var string|null
@@ -72,17 +70,5 @@ class Condition implements JsonSerializable
     public function setCurrent(?string $current): void
     {
         $this->current = $current;
-    }
-
-    /**
-     * @return array|null
-     */
-    public function jsonSerialize(): ?array
-    {
-        return [
-            'type' => $this->getType(),
-            'expected' => $this->getExpected(),
-            'current' => $this->getCurrent(),
-        ];
     }
 }

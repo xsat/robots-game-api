@@ -5,8 +5,7 @@ declare(strict_types=1);
 namespace App;
 
 use App\Controllers\DefaultController;
-use App\Controllers\V1\Players\AchievementsController;
-use App\Controllers\V1\Players\GamesController;
+use App\Controllers\V1\GamesController;
 use App\Controllers\V1\PlayersController;
 use App\Exceptions\HttpNotFoundException;
 use Exception;
@@ -90,7 +89,6 @@ class Application
              * @uses PlayersController::create
              * @uses PlayersController::show
              * @uses PlayersController::update
-             * @uses AchievementsController::show
              * @uses GamesController::create
              * @uses GamesController::show
              * @uses GamesController::update

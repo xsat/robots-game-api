@@ -16,3 +16,18 @@ api_players_update:
   path: /v1/players/{playerId}
   controller: App\Controllers\V1\PlayersController::update
   methods: [PUT]
+
+api_games_create:
+  path: /v1/games
+  controller: App\Controllers\V1\GamesController::create
+  methods: [POST]
+
+api_games_show:
+  path: /v1/games/{gameId}
+  controller: App\Controllers\V1\GamesController::show
+  methods: [GET]
+
+api_games_update:
+  path: /v1/games/{gameId}
+  controller: App\Controllers\V1\GamesController::update
+  methods: [PUT]

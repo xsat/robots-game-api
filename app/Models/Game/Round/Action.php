@@ -3,7 +3,7 @@
 
 declare(strict_types=1);
 
-namespace App\Models\Player\Game\Round;
+namespace App\Models\Game\Round;
 
 use JsonSerializable;
 
@@ -101,6 +101,11 @@ class Action implements JsonSerializable
      */
     public function jsonSerialize(): ?array
     {
-        return null;
+        return [
+            'playerId' => $this->getPlayerId(),
+            'type' => $this->getType(),
+            'damage' => $this->getDamage(),
+            'speed' => $this->getSpeed(),
+        ];
     }
 }

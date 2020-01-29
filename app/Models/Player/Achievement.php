@@ -103,7 +103,6 @@ class Achievement implements JsonSerializable
     {
         return [
             'title' => $this->getTitle(),
-            'conditions' => [],
             'isReached' => $this->isReached(),
             'dateReached' => $this->getDateReached(),
         ];
