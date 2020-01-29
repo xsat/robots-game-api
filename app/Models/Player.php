@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use App\Models\Player\Achievement;
 use JsonSerializable;
 
 /**
@@ -25,6 +26,16 @@ class Player implements JsonSerializable
      * @var string|null
      */
     private ?string $password = null;
+
+    /**
+     * @var Achievement[]
+     */
+    private array $achievements = [];
+
+    /**
+     * @var string|null
+     */
+    private ?string $dateRegistered = null;
 
     /**
      * @return string|null
@@ -72,6 +83,38 @@ class Player implements JsonSerializable
     public function setPassword(?string $password): void
     {
         $this->password = $password;
+    }
+
+    /**
+     * @return Achievement[]
+     */
+    public function getAchievements(): array
+    {
+        return $this->achievements;
+    }
+
+    /**
+     * @param Achievement[] $achievements
+     */
+    public function setAchievements(array $achievements): void
+    {
+        $this->achievements = $achievements;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getDateRegistered(): ?string
+    {
+        return $this->dateRegistered;
+    }
+
+    /**
+     * @param string|null $dateRegistered
+     */
+    public function setDateRegistered(?string $dateRegistered): void
+    {
+        $this->dateRegistered = $dateRegistered;
     }
 
     /**

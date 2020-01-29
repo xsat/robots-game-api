@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Models\Player;
 
-use App\Models\Player\Achievement\Item;
+use App\Models\Player\Achievement\Condition;
 use JsonSerializable;
 
 /**
@@ -15,64 +15,85 @@ class Achievement implements JsonSerializable
     /**
      * @var string|null
      */
-    private ?string $achievementId = null;
+    private ?string $title = null;
+
+    /**
+     * @var Condition[]
+     */
+    private array $conditions = [];
+
+    /**
+     * @var bool
+     */
+    private bool $reached = false;
 
     /**
      * @var string|null
      */
-    private ?string $playerId = null;
-
-    /**
-     * @var Item[]
-     */
-    private array $items = [];
+    private ?string $dateReached = null;
 
     /**
      * @return string|null
      */
-    public function getAchievementId(): ?string
+    public function getTitle(): ?string
     {
-        return $this->achievementId;
+        return $this->title;
     }
 
     /**
-     * @param string|null $achievementId
+     * @param string|null $title
      */
-    public function setAchievementId(?string $achievementId): void
+    public function setTitle(?string $title): void
     {
-        $this->achievementId = $achievementId;
+        $this->title = $title;
+    }
+
+    /**
+     * @return Condition[]
+     */
+    public function getConditions(): array
+    {
+        return $this->conditions;
+    }
+
+    /**
+     * @param Condition[] $conditions
+     */
+    public function setConditions(array $conditions): void
+    {
+        $this->conditions = $conditions;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isReached(): bool
+    {
+        return $this->reached;
+    }
+
+    /**
+     * @param bool $reached
+     */
+    public function setReached(bool $reached): void
+    {
+        $this->reached = $reached;
     }
 
     /**
      * @return string|null
      */
-    public function getPlayerId(): ?string
+    public function getDateReached(): ?string
     {
-        return $this->playerId;
+        return $this->dateReached;
     }
 
     /**
-     * @param string|null $playerId
+     * @param string|null $dateReached
      */
-    public function setPlayerId(?string $playerId): void
+    public function setDateReached(?string $dateReached): void
     {
-        $this->playerId = $playerId;
-    }
-
-    /**
-     * @return Item[]
-     */
-    public function getItems(): array
-    {
-        return $this->items;
-    }
-
-    /**
-     * @param Item[] $items
-     */
-    public function setItems(array $items): void
-    {
-        $this->items = $items;
+        $this->dateReached = $dateReached;
     }
 
     /**
@@ -80,6 +101,11 @@ class Achievement implements JsonSerializable
      */
     public function jsonSerialize(): ?array
     {
-        return array_map('jsonSerialize', $this->getItems());
+        return [
+            'title' => $this->getTitle(),
+            'conditions' => [],
+            'isReached' => $this->isReached(),
+            'dateReached' => $this->getDateReached(),
+        ];
     }
 }
