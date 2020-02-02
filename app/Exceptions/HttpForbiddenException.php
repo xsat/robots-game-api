@@ -8,12 +8,12 @@ use Exception;
 use Throwable;
 
 /**
- * Class HttpNotFoundException
+ * Class HttpForbiddenException
  */
-class HttpNotFoundException extends Exception
+class HttpForbiddenException extends Exception
 {
     /**
-     * HttpNotFoundException constructor.
+     * HttpForbiddenException constructor.
      *
      * @param string $message
      * @param int $code
@@ -21,7 +21,7 @@ class HttpNotFoundException extends Exception
      */
     public function __construct(
         string $message = '',
-        int $code = 404,
+        int $code = 403,
         Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);

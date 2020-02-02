@@ -7,8 +7,9 @@ namespace App\Controllers\V1;
 use App\Controllers\AbstractController;
 use App\Exceptions\HttpNotFoundException;
 use App\Mappers\PlayerMapper;
+use App\Mappers\PlayerTokenMapper;
 use App\Models\Player;
-use MongoDB\Client;
+use App\Models\PlayerToken;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -25,9 +26,16 @@ class PlayersController extends AbstractController
         $player = new Player();
         $player->setUsername('xsat');
         $player->setPassword(password_hash('123456', PASSWORD_BCRYPT));
-        if (!(new PlayerMapper(new Client()))->create($player)) {
+        if (!(new PlayerMapper($this->client()))->create($player)) {
             throw new RuntimeException('Player was not created.');
         }
+
+        $playerToken = new PlayerToken();
+        $playerToken->setPlayerId($player->getPlayerId());
+        $playerToken->setToken('test_token');
+        $playerToken->setDateExpired(date('Y-m-d H:i:s', strtotime('+1 day')));
+
+        (new PlayerTokenMapper($this->client()))->create($playerToken);
 
         return $this->json($player);
     }
@@ -41,7 +49,7 @@ class PlayersController extends AbstractController
      */
     public function show(string $playerId): Response
     {
-        $player = (new PlayerMapper(new Client()))->findById($playerId);
+        $player = (new PlayerMapper($this->client()))->findById($playerId);
         if ($player === null) {
             throw new HttpNotFoundException('Player was not found.');
         }
@@ -59,7 +67,7 @@ class PlayersController extends AbstractController
      */
     public function update(string $playerId): Response
     {
-        $playerMapper = new PlayerMapper(new Client());
+        $playerMapper = new PlayerMapper($this->client());
         $player = $playerMapper->findById($playerId);
         if ($player === null) {
             throw new HttpNotFoundException('Player was not found.');

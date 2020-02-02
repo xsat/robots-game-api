@@ -89,7 +89,7 @@ class GameMapper
                         'actions' => array_map(
                             function (Action $action): array {
                                 return [
-                                    'playerId' => new ObjectId(
+                                    'player_id' => new ObjectId(
                                         $action->getPlayerId()
                                     ),
                                     'type' => $action->getType(),
@@ -131,7 +131,6 @@ class GameMapper
         if (!$result) {
             return null;
         }
-
 
         $game = new Game();
         $this->assign($result, $game);

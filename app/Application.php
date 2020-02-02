@@ -7,8 +7,10 @@ namespace App;
 use App\Controllers\DefaultController;
 use App\Controllers\V1\GamesController;
 use App\Controllers\V1\PlayersController;
+use App\Exceptions\HttpForbiddenException;
 use App\Exceptions\HttpNotFoundException;
 use Exception;
+use MongoDB\Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\ErrorHandler\ErrorHandler;
@@ -41,6 +43,11 @@ class Application
     private LoaderInterface $loader;
 
     /**
+     * @var Client
+     */
+    private Client $client;
+
+    /**
      * Application constructor.
      */
     public function __construct()
@@ -50,6 +57,7 @@ class Application
         $this->loader = new YamlFileLoader(
             new FileLocator(__DIR__ . '/../config')
         );
+        $this->client = new Client();
     }
 
     public function run(): void
@@ -93,7 +101,7 @@ class Application
              * @uses GamesController::update
              */
             $controller = explode('::', $arguments['_controller']);
-            $controller[0] = new $controller[0]($this->request);
+            $controller[0] = new $controller[0]($this->request, $this->client);
             unset($arguments['_controller']);
             unset($arguments['_route']);
             $arguments = array_values($arguments);
@@ -144,6 +152,8 @@ class Application
 
         if ($className === HttpNotFoundException::class) {
             return 'not-found';
+        } elseif ($className === HttpForbiddenException::class) {
+            return 'forbidden';
         }
 
         return 'internal-server-error';

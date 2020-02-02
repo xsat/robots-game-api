@@ -4,21 +4,20 @@ declare(strict_types=1);
 
 namespace App\Controllers\V1;
 
-use App\Controllers\AbstractController;
+use App\Controllers\AbstractTokenController;
 use App\Exceptions\HttpNotFoundException;
 use App\Mappers\GameMapper;
 use App\Models\Game;
 use App\Models\Game\Player;
 use App\Models\Game\Round;
 use App\Models\Game\Round\Action;
-use MongoDB\Client;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Class GamesController
  */
-class GamesController extends AbstractController
+class GamesController extends AbstractTokenController
 {
     /**
      * @return Response
@@ -44,7 +43,7 @@ class GamesController extends AbstractController
 
         $game->setRounds([$round]);
 
-        if (!(new GameMapper(new Client()))->create($game)) {
+        if (!(new GameMapper($this->client()))->create($game)) {
             throw new RuntimeException('Game was not created.');
         }
 
@@ -60,7 +59,7 @@ class GamesController extends AbstractController
      */
     public function show(string $gameId): Response
     {
-        $game = (new GameMapper(new Client()))->findById($gameId);
+        $game = (new GameMapper($this->client()))->findById($gameId);
         if ($game === null) {
             throw new HttpNotFoundException('Game was not found.');
         }
@@ -78,7 +77,7 @@ class GamesController extends AbstractController
      */
     public function update(string $gameId): Response
     {
-        $gameMapper = new GameMapper(new Client());
+        $gameMapper = new GameMapper($this->client());
         $game = $gameMapper->findById($gameId);
         if ($game === null) {
             throw new HttpNotFoundException('Game was not found.');
