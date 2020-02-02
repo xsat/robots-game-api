@@ -15,9 +15,9 @@ use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
- * Class GamesController
+ * Class GameController
  */
-class GamesController extends AbstractTokenController
+class GameController extends AbstractTokenController
 {
     /**
      * @return Response
@@ -51,8 +51,6 @@ class GamesController extends AbstractTokenController
     }
 
     /**
-     * @param string $gameId
-     *
      * @return Response
      *
      * @throws HttpNotFoundException

@@ -5,8 +5,10 @@ declare(strict_types=1);
 namespace App;
 
 use App\Controllers\DefaultController;
-use App\Controllers\V1\GamesController;
-use App\Controllers\V1\PlayersController;
+use App\Controllers\V1\AuthController;
+use App\Controllers\V1\RegisterController;
+use App\Controllers\V1\GameController;
+use App\Controllers\V1\PlayerController;
 use App\Exceptions\HttpForbiddenException;
 use App\Exceptions\HttpNotFoundException;
 use Exception;
@@ -93,12 +95,13 @@ class Application
              * @todo Redesign this solution
              *
              * @uses DefaultController::index
-             * @uses PlayersController::create
-             * @uses PlayersController::show
-             * @uses PlayersController::update
-             * @uses GamesController::create
-             * @uses GamesController::show
-             * @uses GamesController::update
+             * @uses RegisterController::create
+             * @uses AuthController::login
+             * @uses PlayerController::show
+             * @uses PlayerController::update
+             * @uses GameController::create
+             * @uses GameController::show
+             * @uses GameController::update
              */
             $controller = explode('::', $arguments['_controller']);
             $controller[0] = new $controller[0]($this->request, $this->client);

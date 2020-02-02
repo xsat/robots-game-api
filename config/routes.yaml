@@ -2,32 +2,37 @@ index:
   path: /
   controller: App\Controllers\DefaultController::index
 
-api_players_create:
-  path: /v1/players
-  controller: App\Controllers\V1\PlayersController::create
+api_player_create:
+  path: /v1/player
+  controller: App\Controllers\V1\RegisterController::create
   methods: [POST]
 
-api_players_show:
-  path: /v1/players/{playerId}
-  controller: App\Controllers\V1\PlayersController::show
+api_player_login:
+  path: /v1/player
+  controller: App\Controllers\V1\AuthController::login
+  methods: [POST]
+
+api_player_show:
+  path: /v1/player
+  controller: App\Controllers\V1\PlayerController::show
   methods: [GET]
 
-api_players_update:
-  path: /v1/players/{playerId}
-  controller: App\Controllers\V1\PlayersController::update
+api_player_update:
+  path: /v1/player
+  controller: App\Controllers\V1\PlayerController::update
   methods: [PUT]
 
-api_games_create:
-  path: /v1/games
-  controller: App\Controllers\V1\GamesController::create
+api_game_create:
+  path: /v1/player/game
+  controller: App\Controllers\V1\GameController::create
   methods: [POST]
 
-api_games_show:
-  path: /v1/games/{gameId}
-  controller: App\Controllers\V1\GamesController::show
+api_game_show:
+  path: /v1/player/game
+  controller: App\Controllers\V1\GameController::show
   methods: [GET]
 
-api_games_update:
-  path: /v1/games/{gameId}
-  controller: App\Controllers\V1\GamesController::update
+api_game_update:
+  path: /v1/player/game
+  controller: App\Controllers\V1\GameController::update
   methods: [PUT]
