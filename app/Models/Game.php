@@ -146,8 +146,8 @@ class Game implements JsonSerializable
     {
         return [
             'gameId' => $this->getGameId(),
-            'players' => [],
-            'rounds' => [],
+            'players' => (new Items($this->players))->jsonSerialize(),
+            'rounds' => (new Items($this->rounds))->jsonSerialize(),
             'isEnded' => $this->isEnded(),
             'dateStarted' => $this->getDateStarted(),
             'dateEnded' => $this->getDateEnded(),

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controllers\V1;
 
 use App\Controllers\AbstractTokenController;
-use App\Exceptions\HttpNotFoundException;
 use App\Mappers\PlayerMapper;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
@@ -27,7 +26,6 @@ class PlayerController extends AbstractTokenController
     /**
      * @return Response
      *
-     * @throws HttpNotFoundException
      * @throws RuntimeException
      */
     public function update(): Response

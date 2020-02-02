@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace App\Exceptions;
 
 use Exception;
+use JsonSerializable;
 use Throwable;
 
 /**
- * Class HttpForbiddenException
+ * Class ForbiddenException
  */
-class HttpForbiddenException extends Exception
+class ForbiddenException extends Exception implements JsonSerializable
 {
     /**
-     * HttpForbiddenException constructor.
+     * ForbiddenException constructor.
      *
      * @param string $message
      * @param int $code
@@ -25,5 +26,16 @@ class HttpForbiddenException extends Exception
         Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
+    }
+
+    /**
+     * @return array|null
+     */
+    public function jsonSerialize(): ?array
+    {
+        return [
+            'type' => 'forbidden',
+            'message' => $this->getMessage(),
+        ];
     }
 }

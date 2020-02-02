@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Models\Game;
 
 use App\Models\Game\Round\Action;
+use App\Models\Items;
 use JsonSerializable;
 
 /**
@@ -124,7 +125,7 @@ class Round implements JsonSerializable
     {
         return [
             'number' => $this->getNumber(),
-            'actions' => [],
+            'actions' => (new Items($this->actions))->jsonSerialize(),
             'isEnded' => $this->isEnded(),
             'dateStarted' => $this->getDateStarted(),
             'dateEnded' => $this->getDateEnded(),

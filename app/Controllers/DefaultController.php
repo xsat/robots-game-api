@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Exceptions\HttpNotFoundException;
+use App\Exceptions\NotFoundException;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -15,10 +15,10 @@ class DefaultController extends AbstractController
     /**
      * @return Response
      *
-     * @throws HttpNotFoundException
+     * @throws NotFoundException
      */
     public function index(): Response
     {
-        throw new HttpNotFoundException('Page was not found.');
+        throw new NotFoundException('Page was not found.');
     }
 }

@@ -8,7 +8,7 @@ api_player_create:
   methods: [POST]
 
 api_player_login:
-  path: /v1/player
+  path: /v1/login
   controller: App\Controllers\V1\AuthController::login
   methods: [POST]
 

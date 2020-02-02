@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Models;
 
+use JsonSerializable;
+
 /**
  * Class PlayerToken
  */
-class PlayerToken
+class PlayerToken implements JsonSerializable
 {
     /**
      * @var string|null
@@ -33,6 +35,11 @@ class PlayerToken
      * @var string|null
      */
     private ?string $dateExpired = null;
+
+    /**
+     * @var Player|null
+     */
+    private ?Player $player = null;
 
     /**
      * @return string|null
@@ -112,5 +119,38 @@ class PlayerToken
     public function setDateExpired(?string $dateExpired): void
     {
         $this->dateExpired = $dateExpired;
+    }
+
+    /**
+     * @param Player $player
+     */
+    public function setPlayer(Player $player): void
+    {
+        $this->player = $player;
+        $this->setPlayerId($player->getPlayerId());
+    }
+
+    /**
+     * @return string
+     */
+    public function generateToken(): string {
+        return md5(uniqid((string)rand(), true));
+    }
+
+    /**
+     * @return array|null
+     */
+    public function jsonSerialize(): ?array
+    {
+        $json = [];
+
+        if ($this->player) {
+            $json = $this->player->jsonSerialize();
+        }
+
+        return $json +
+            [
+                'token' => $this->getToken()
+            ];
     }
 }

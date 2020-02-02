@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use App\Exceptions\HttpForbiddenException;
+use App\Exceptions\ForbiddenException;
 use App\Mappers\PlayerMapper;
 use App\Mappers\PlayerTokenMapper;
 use App\Models\Player;
@@ -27,13 +27,13 @@ abstract class AbstractTokenController extends AbstractController
      * @param Request $request
      * @param Client $client
      *
-     * @throws HttpForbiddenException
+     * @throws ForbiddenException
      */
     public function __construct(Request $request, Client $client)
     {
         parent::__construct($request, $client);
 
-        $authorization = ($request->headers->get('Authorization'));
+        $authorization = $request->headers->get('Authorization', '');
 
         if (preg_match('#^Bearer ([^ ]+)$#isU', $authorization, $matches)) {
             $playerToken = (new PlayerTokenMapper($client))->findByToken(
@@ -48,7 +48,7 @@ abstract class AbstractTokenController extends AbstractController
         }
 
         if (!$this->player) {
-            throw new HttpForbiddenException('Not Allowed.');
+            throw new ForbiddenException('Not Allowed.');
         }
     }
 

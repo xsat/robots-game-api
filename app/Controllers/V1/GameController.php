@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Controllers\V1;
 
 use App\Controllers\AbstractTokenController;
-use App\Exceptions\HttpNotFoundException;
+use App\Exceptions\NotFoundException;
 use App\Mappers\GameMapper;
 use App\Models\Game;
 use App\Models\Game\Player;
@@ -51,15 +51,17 @@ class GameController extends AbstractTokenController
     }
 
     /**
+     * @param string $gameId
+     *
      * @return Response
      *
-     * @throws HttpNotFoundException
+     * @throws NotFoundException
      */
     public function show(string $gameId): Response
     {
         $game = (new GameMapper($this->client()))->findById($gameId);
         if ($game === null) {
-            throw new HttpNotFoundException('Game was not found.');
+            throw new NotFoundException('Game was not found.');
         }
 
         return $this->json($game);
@@ -70,7 +72,7 @@ class GameController extends AbstractTokenController
      *
      * @return Response
      *
-     * @throws HttpNotFoundException
+     * @throws NotFoundException
      * @throws RuntimeException
      */
     public function update(string $gameId): Response
@@ -78,7 +80,7 @@ class GameController extends AbstractTokenController
         $gameMapper = new GameMapper($this->client());
         $game = $gameMapper->findById($gameId);
         if ($game === null) {
-            throw new HttpNotFoundException('Game was not found.');
+            throw new NotFoundException('Game was not found.');
         }
 
         $game->setEnded(true);

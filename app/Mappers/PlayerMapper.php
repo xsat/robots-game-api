@@ -7,6 +7,7 @@ namespace App\Mappers;
 use App\Models\Player;
 use MongoDB\BSON\ObjectId;
 use MongoDB\Client;
+use MongoDB\Model\BSONDocument;
 
 /**
  * Class PlayerMapper
@@ -79,6 +80,7 @@ class PlayerMapper
      */
     public function findById(string $id): ?Player
     {
+        /** @var BSONDocument|null $result */
         $result = $this->client->battle->players->findOne(
             ['_id' => new ObjectId($id)]
         );
@@ -88,10 +90,41 @@ class PlayerMapper
         }
 
         $player = new Player();
-        $player->setPlayerId((string)$result['_id']);
-        $player->setUsername($result['username']);
-        $player->setPassword($result['password']);
+        $this->assign($result, $player);
 
         return $player;
+    }
+
+    /**
+     * @param string $username
+     *
+     * @return Player|null
+     */
+    public function findByUsername(string $username): ?Player
+    {
+        /** @var BSONDocument|null $result */
+        $result = $this->client->battle->players->findOne(
+            ['username' => $username]
+        );
+
+        if (!$result) {
+            return null;
+        }
+
+        $player = new Player();
+        $this->assign($result, $player);
+
+        return $player;
+    }
+
+    /**
+     * @param BSONDocument $document
+     * @param Player $player
+     */
+    private function assign(BSONDocument $document, Player $player): void
+    {
+        $player->setPlayerId((string)$document['_id']);
+        $player->setUsername($document['username']);
+        $player->setPassword($document['password']);
     }
 }

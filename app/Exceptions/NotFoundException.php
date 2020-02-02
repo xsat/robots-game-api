@@ -5,15 +5,16 @@ declare(strict_types=1);
 namespace App\Exceptions;
 
 use Exception;
+use JsonSerializable;
 use Throwable;
 
 /**
- * Class HttpNotFoundException
+ * Class NotFoundException
  */
-class HttpNotFoundException extends Exception
+class NotFoundException extends Exception implements JsonSerializable
 {
     /**
-     * HttpNotFoundException constructor.
+     * NotFoundException constructor.
      *
      * @param string $message
      * @param int $code
@@ -25,5 +26,16 @@ class HttpNotFoundException extends Exception
         Throwable $previous = null
     ) {
         parent::__construct($message, $code, $previous);
+    }
+
+    /**
+     * @return array|null
+     */
+    public function jsonSerialize(): ?array
+    {
+        return [
+            'type' => 'not-found',
+            'message' => $this->getMessage(),
+        ];
     }
 }

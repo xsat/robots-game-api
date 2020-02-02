@@ -6,12 +6,11 @@ namespace App;
 
 use App\Controllers\DefaultController;
 use App\Controllers\V1\AuthController;
-use App\Controllers\V1\RegisterController;
 use App\Controllers\V1\GameController;
 use App\Controllers\V1\PlayerController;
-use App\Exceptions\HttpForbiddenException;
-use App\Exceptions\HttpNotFoundException;
+use App\Controllers\V1\RegisterController;
 use Exception;
+use JsonSerializable;
 use MongoDB\Client;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -136,10 +135,7 @@ class Application
     private function renderException(Throwable $throwable): void
     {
         $this->response = new JsonResponse(
-            [
-                'type' => $this->getType($throwable),
-                'message' => $throwable->getMessage(),
-            ],
+            $this->getData($throwable),
             $throwable->getCode() ?: 500
         );
     }
@@ -147,18 +143,17 @@ class Application
     /**
      * @param Throwable $throwable
      *
-     * @return string
+     * @return array
      */
-    private function getType(Throwable $throwable): string
+    private function getData(Throwable $throwable): array
     {
-        $className = get_class($throwable);
-
-        if ($className === HttpNotFoundException::class) {
-            return 'not-found';
-        } elseif ($className === HttpForbiddenException::class) {
-            return 'forbidden';
+        if ($throwable instanceof JsonSerializable) {
+            return $throwable->jsonSerialize();
         }
 
-        return 'internal-server-error';
+        return [
+            'type' => 'internal-server-error',
+            'message' => $throwable->getMessage(),
+        ];
     }
 }
