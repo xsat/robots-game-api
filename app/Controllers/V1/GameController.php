@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Controllers\V1;
 
 use App\Controllers\AbstractTokenController;
-use App\Exceptions\NotFoundException;
 use App\Mappers\GameMapper;
 use App\Models\Game;
 use App\Models\Game\Player;
@@ -70,14 +69,11 @@ class GameController extends AbstractTokenController
                 $action->setType('attack');
                 $action->setDamage(rand(1, 10));
                 $action->setSpeed(rand(1, 10));
-
                 $round->addAction($action);
 
-                $player
-            }
+                $player = $game->findPlayer($target->getPlayerId());
 
-            foreach ($game->getPlayers() as $player) {
-                if ($player->getPlayerId() !== $this->player()->getPlayerId()) {
+                if ($player) {
                     $player->setHealth(
                         $player->getHealth() - $action->getDamage()
                     );
@@ -87,6 +83,10 @@ class GameController extends AbstractTokenController
                         $game->setEnded(true);
                     }
                 }
+
+                $round->setEnded(
+                    count($game->getPlayers()) === count($round->getActions())
+                );
             }
 
             $gameMapper->update($game);

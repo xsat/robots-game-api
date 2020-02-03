@@ -195,6 +195,8 @@ class GameMapper
                 $round->addAction($action);
             }
 
+            $round->setEnded($roundDocument['is_ended']);
+
             $game->addRound($round);
         }
 

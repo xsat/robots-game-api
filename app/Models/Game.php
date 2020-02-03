@@ -93,7 +93,10 @@ class Game implements JsonSerializable
      */
     public function findTarget(string $playerId): ?Player
     {
-        foreach (array_rand($this->players) as $player) {
+        $randomPlayers = $this->getPlayers();
+        array_rand($randomPlayers);
+
+        foreach ($randomPlayers as $player) {
             if ($player->getPlayerId() !== $playerId) {
                 return $player;
             }
