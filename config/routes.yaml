@@ -2,14 +2,34 @@ index:
   path: /
   controller: App\Controllers\DefaultController::index
 
+api_leaderboards_options:
+  path: /v1/leaderboards
+  controller: App\Controllers\DefaultController::options
+  methods: [OPTIONS]
+
+api_leaderboards_list:
+  path: /v1/leaderboards
+  controller: App\Controllers\V1\LeaderboardsController::list
+  methods: [GET]
+
+api_auth_options:
+  path: /v1/login
+  controller: App\Controllers\DefaultController::options
+  methods: [OPTIONS]
+
+api_auth_login:
+  path: /v1/login
+  controller: App\Controllers\V1\AuthController::login
+  methods: [POST]
+
+api_player_options:
+  path: /v1/player
+  controller: App\Controllers\DefaultController::options
+  methods: [OPTIONS]
+
 api_player_create:
   path: /v1/player
   controller: App\Controllers\V1\RegisterController::create
-  methods: [POST]
-
-api_player_login:
-  path: /v1/login
-  controller: App\Controllers\V1\AuthController::login
   methods: [POST]
 
 api_player_show:
@@ -21,6 +41,21 @@ api_player_update:
   path: /v1/player
   controller: App\Controllers\V1\PlayerController::update
   methods: [PUT]
+
+api_achievements_options:
+  path: /v1/player/achievements
+  controller: App\Controllers\DefaultController::options
+  methods: [OPTIONS]
+
+api_achievements_show:
+  path: /v1/player/achievements
+  controller: App\Controllers\V1\AchievementsController::show
+  methods: [GET]
+
+api_game_options:
+  path: /v1/player/game
+  controller: App\Controllers\DefaultController::options
+  methods: [OPTIONS]
 
 api_game_create:
   path: /v1/player/game

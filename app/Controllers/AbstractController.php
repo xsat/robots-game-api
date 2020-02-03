@@ -48,6 +48,16 @@ abstract class AbstractController
     }
 
     /**
+     * @param string $key
+     *
+     * @return array|null
+     */
+    protected function get(string $key): ?string
+    {
+        return $this->request->get($key);
+    }
+
+    /**
      * @return Client
      */
     protected function client(): Client

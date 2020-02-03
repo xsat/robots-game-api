@@ -21,4 +21,12 @@ class DefaultController extends AbstractController
     {
         throw new NotFoundException('Page was not found.');
     }
+
+    /**
+     * @return Response
+     */
+    public function options(): Response
+    {
+        return new Response();
+    }
 }

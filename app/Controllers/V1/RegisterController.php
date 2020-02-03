@@ -22,9 +22,10 @@ class RegisterController extends AbstractController
      */
     public function create(): Response
     {
+        $data = $this->data();
         $player = new Player();
-        $player->setUsername('xsat');
-        $player->setPassword(password_hash('123456', PASSWORD_BCRYPT));
+        $player->setUsername($data['username']);
+        $player->setPassword(password_hash($data['password'], PASSWORD_BCRYPT));
         if (!(new PlayerMapper($this->client()))->create($player)) {
             throw new RuntimeException('Player was not created.');
         }

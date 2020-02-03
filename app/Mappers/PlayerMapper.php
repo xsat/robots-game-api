@@ -118,6 +118,41 @@ class PlayerMapper
     }
 
     /**
+     * @param int $limit
+     * @param int $offset
+     *
+     * @return Player[]
+     */
+    public function list(int $limit = 10, int $offset = 0): array
+    {
+        $results = $this->client->battle->players->find(
+            [],
+            [
+                'limit' => $limit,
+                'skip' => $offset,
+            ]
+        );
+        $items = [];
+
+        /** @var BSONDocument $result */
+        foreach ($results as $result) {
+            $player = new Player();
+            $this->assign($result, $player);
+            $items[] = $player;
+        }
+
+        return $items;
+    }
+
+    /**
+     * @return int
+     */
+    public function total(): int
+    {
+        return $this->client->battle->players->countDocuments();
+    }
+
+    /**
      * @param BSONDocument $document
      * @param Player $player
      */

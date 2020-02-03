@@ -126,6 +126,14 @@ class Application
             }
         }
 
+        $this->response->headers->add(
+            [
+                'Access-Control-Allow-Origin' => '*',
+                'Access-Control-Allow-Methods' => '*',
+                'Access-Control-Allow-Headers' => '*',
+            ]
+        );
+
         $this->response->send();
     }
 
