@@ -12,10 +12,6 @@ use JsonSerializable;
  */
 class Round implements JsonSerializable
 {
-    /**
-     * @var int
-     */
-    private int $number = 0;
 
     /**
      * @var Action[]
@@ -27,22 +23,6 @@ class Round implements JsonSerializable
      */
     private bool $ended = false;
 
-
-    /**
-     * @return int|null
-     */
-    public function getNumber(): ?int
-    {
-        return $this->number;
-    }
-
-    /**
-     * @param int|null $number
-     */
-    public function setNumber(?int $number): void
-    {
-        $this->number = $number;
-    }
 
     /**
      * @return Action[]
@@ -57,6 +37,22 @@ class Round implements JsonSerializable
      */
     public function addAction(Action $action): void {
         $this->actions[] = $action;
+    }
+
+    /**
+     * @param string $playerId
+     *
+     * @return Action|null
+     */
+    public function findAction(string $playerId): ?Action
+    {
+        foreach ($this->actions as $action) {
+            if ($action->getPlayerId() === $playerId) {
+                return $action;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -81,7 +77,6 @@ class Round implements JsonSerializable
     public function jsonSerialize(): ?array
     {
         return [
-            'number' => $this->getNumber(),
             'actions' => $this->actions,
             'isEnded' => $this->isEnded(),
         ];

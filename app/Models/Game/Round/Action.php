@@ -20,6 +20,11 @@ class Action implements JsonSerializable
     /**
      * @var string|null
      */
+    private ?string $targetId = null;
+
+    /**
+     * @var string|null
+     */
     private ?string $type = null;
 
     /**
@@ -46,6 +51,22 @@ class Action implements JsonSerializable
     public function setPlayerId(?string $playerId): void
     {
         $this->playerId = $playerId;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getTargetId(): ?string
+    {
+        return $this->targetId;
+    }
+
+    /**
+     * @param string|null $targetId
+     */
+    public function setTargetId(?string $targetId): void
+    {
+        $this->targetId = $targetId;
     }
 
     /**
@@ -103,6 +124,7 @@ class Action implements JsonSerializable
     {
         return [
             'playerId' => $this->getPlayerId(),
+            'targetId' => $this->getTargetId(),
             'type' => $this->getType(),
             'damage' => $this->getDamage(),
             'speed' => $this->getSpeed(),

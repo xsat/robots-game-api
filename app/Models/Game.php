@@ -65,8 +65,41 @@ class Game implements JsonSerializable
     /**
      * @param Player $player
      */
-    public function addPlayer(Player $player): void {
+    public function addPlayer(Player $player): void
+    {
         $this->players[] = $player;
+    }
+
+    /**
+     * @param string $playerId
+     *
+     * @return Player|null
+     */
+    public function findPlayer(string $playerId): ?Player
+    {
+        foreach ($this->players as $player) {
+            if ($player->getPlayerId() === $playerId) {
+                return $player;
+            }
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $playerId
+     *
+     * @return Player|null
+     */
+    public function findTarget(string $playerId): ?Player
+    {
+        foreach (array_rand($this->players) as $player) {
+            if ($player->getPlayerId() !== $playerId) {
+                return $player;
+            }
+        }
+
+        return null;
     }
 
     /**
@@ -80,8 +113,19 @@ class Game implements JsonSerializable
     /**
      * @param Round $round
      */
-    public function addRound(Round $round): void {
+    public function addRound(Round $round): void
+    {
         $this->rounds[] = $round;
+    }
+
+    /**
+     * @return Round|null
+     */
+    public function getLastRound(): ?Round
+    {
+        $index = array_key_last($this->rounds);
+
+        return $this->rounds[$index] ?? null;
     }
 
     /**

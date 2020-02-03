@@ -84,12 +84,14 @@ class GameMapper
             'rounds' => array_map(
                 function (Round $round): array {
                     return [
-                        'number' => $round->getNumber(),
                         'actions' => array_map(
                             function (Action $action): array {
                                 return [
                                     'player_id' => new ObjectId(
                                         $action->getPlayerId()
+                                    ),
+                                    'target_id' => new ObjectId(
+                                        $action->getTargetId()
                                     ),
                                     'type' => $action->getType(),
                                     'damage' => $action->getDamage(),
@@ -142,7 +144,7 @@ class GameMapper
             [
                 '$or' => [
                     [
-                        'players.playerId' => new ObjectId($playerId),
+                        'players.player_id' => new ObjectId($playerId),
                         'is_ended' => false,
                     ],
                     [
@@ -181,11 +183,11 @@ class GameMapper
 
         foreach ($document['rounds'] as $roundDocument) {
             $round = new Round();
-            $round->setNumber($roundDocument['number']);
 
             foreach ($roundDocument['actions'] as $actionDocument) {
                 $action = new Action();
                 $action->setPlayerId((string)$actionDocument['player_id']);
+                $action->setTargetId((string)$actionDocument['target_id']);
                 $action->setType($actionDocument['type']);
                 $action->setDamage($actionDocument['damage']);
                 $action->setSpeed($actionDocument['speed']);

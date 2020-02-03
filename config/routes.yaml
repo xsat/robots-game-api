@@ -59,15 +59,6 @@ api_game_options:
 
 api_game_create:
   path: /v1/player/game
-  controller: App\Controllers\V1\GameController::create
+  controller: App\Controllers\V1\GameController::play
   methods: [POST]
 
-api_game_show:
-  path: /v1/player/game
-  controller: App\Controllers\V1\GameController::show
-  methods: [GET]
-
-api_game_update:
-  path: /v1/player/game
-  controller: App\Controllers\V1\GameController::update
-  methods: [PUT]

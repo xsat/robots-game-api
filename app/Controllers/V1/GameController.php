@@ -22,7 +22,7 @@ class GameController extends AbstractTokenController
     /**
      * @return Response
      */
-    public function create(): Response
+    public function play(): Response
     {
         $gameMapper = new GameMapper($this->client());
         $game = $gameMapper->findByPlayerId(
@@ -41,16 +41,9 @@ class GameController extends AbstractTokenController
                 throw new RuntimeException('Game was not created.');
             }
         } elseif (!$game->isStarted()) {
-            $isNewUser = true;
+            $player = $game->findPlayer($this->player()->getPlayerId());
 
-            foreach ($game->getPlayers() as $player) {
-                if ($player->getPlayerId() === $this->player()->getPlayerId()) {
-                    $isNewUser = false;
-                    break;
-                }
-            }
-
-            if ($isNewUser) {
+            if (!$player) {
                 $player = new Player();
                 $player->setPlayerId($this->player()->getPlayerId());
                 $player->setHealth(100);
@@ -60,18 +53,28 @@ class GameController extends AbstractTokenController
             $game->setStarted(count($game->getPlayers()) === 2);
             $gameMapper->update($game);
         } elseif ($game->isStarted()) {
-            $round = end($game->getRounds());
+            $round = $game->getLastRound();
 
-            if (!$round) {
+            if (!$round || $round->isEnded()) {
                 $round = new Round();
                 $game->addRound($round);
             }
 
-            $action = new Action();
-            $action->setPlayerId($this->player()->getPlayerId());
-            $action->setType('attack');
-            $action->setDamage(rand(1, 10));
-            $action->setSpeed(rand(1, 10));
+            $action = $round->findAction($this->player()->getPlayerId());
+            $target = $game->findTarget($this->player()->getPlayerId());
+
+            if (!$action && $target) {
+                $action = new Action();
+                $action->setPlayerId($this->player()->getPlayerId());
+                $action->setTargetId($target->getPlayerId());
+                $action->setType('attack');
+                $action->setDamage(rand(1, 10));
+                $action->setSpeed(rand(1, 10));
+
+                $round->addAction($action);
+
+                $player
+            }
 
             foreach ($game->getPlayers() as $player) {
                 if ($player->getPlayerId() !== $this->player()->getPlayerId()) {
@@ -81,54 +84,12 @@ class GameController extends AbstractTokenController
 
                     if ($player->getHealth() <= 0) {
                         $player->setHealth(0);
+                        $game->setEnded(true);
                     }
                 }
             }
 
-            $round->addAction($action);
-
             $gameMapper->update($game);
-        }
-
-        return $this->json($game);
-    }
-
-    /**
-     * @param string $gameId
-     *
-     * @return Response
-     *
-     * @throws NotFoundException
-     */
-    public function show(string $gameId): Response
-    {
-        $game = (new GameMapper($this->client()))->findById($gameId);
-        if ($game === null) {
-            throw new NotFoundException('Game was not found.');
-        }
-
-        return $this->json($game);
-    }
-
-    /**
-     * @param string $gameId
-     *
-     * @return Response
-     *
-     * @throws NotFoundException
-     * @throws RuntimeException
-     */
-    public function update(string $gameId): Response
-    {
-        $gameMapper = new GameMapper($this->client());
-        $game = $gameMapper->findById($gameId);
-        if ($game === null) {
-            throw new NotFoundException('Game was not found.');
-        }
-
-        $game->setEnded(true);
-        if (!$gameMapper->update($game)) {
-            throw new RuntimeException('Game was not updated.');
         }
 
         return $this->json($game);

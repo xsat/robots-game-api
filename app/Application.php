@@ -98,9 +98,7 @@ class Application
              * @uses AuthController::login
              * @uses PlayerController::show
              * @uses PlayerController::update
-             * @uses GameController::create
-             * @uses GameController::show
-             * @uses GameController::update
+             * @uses GameController::play
              */
             $controller = explode('::', $arguments['_controller']);
             $controller[0] = new $controller[0]($this->request, $this->client);
