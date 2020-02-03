@@ -24,27 +24,70 @@ class GameController extends AbstractTokenController
      */
     public function create(): Response
     {
-        $player = new Player();
-        $player->setPlayerId('5e31e0fd111c00006c001fdc');
-        $player->setHealth(100);
+        $gameMapper = new GameMapper($this->client());
+        $game = $gameMapper->findByPlayerId(
+            $this->player()->getPlayerId()
+        );
 
-        $game = new Game();
-        $game->setPlayers([$player]);
+        if (!$game) {
+            $player = new Player();
+            $player->setPlayerId($this->player()->getPlayerId());
+            $player->setHealth(100);
 
-        $action = new Action();
-        $action->setPlayerId('5e31e0fd111c00006c001fdc');
-        $action->setType('attack');
-        $action->setDamage(10);
-        $action->setSpeed(10);
+            $game = new Game();
+            $game->addPlayer($player);
 
-        $round = new Round();
-        $round->setNumber(1);
-        $round->setActions([$action]);
+            if (!(new GameMapper($this->client()))->create($game)) {
+                throw new RuntimeException('Game was not created.');
+            }
+        } elseif (!$game->isStarted()) {
+            $isNewUser = true;
 
-        $game->setRounds([$round]);
+            foreach ($game->getPlayers() as $player) {
+                if ($player->getPlayerId() === $this->player()->getPlayerId()) {
+                    $isNewUser = false;
+                    break;
+                }
+            }
 
-        if (!(new GameMapper($this->client()))->create($game)) {
-            throw new RuntimeException('Game was not created.');
+            if ($isNewUser) {
+                $player = new Player();
+                $player->setPlayerId($this->player()->getPlayerId());
+                $player->setHealth(100);
+                $game->addPlayer($player);
+            }
+
+            $game->setStarted(count($game->getPlayers()) === 2);
+            $gameMapper->update($game);
+        } elseif ($game->isStarted()) {
+            $round = end($game->getRounds());
+
+            if (!$round) {
+                $round = new Round();
+                $game->addRound($round);
+            }
+
+            $action = new Action();
+            $action->setPlayerId($this->player()->getPlayerId());
+            $action->setType('attack');
+            $action->setDamage(rand(1, 10));
+            $action->setSpeed(rand(1, 10));
+
+            foreach ($game->getPlayers() as $player) {
+                if ($player->getPlayerId() !== $this->player()->getPlayerId()) {
+                    $player->setHealth(
+                        $player->getHealth() - $action->getDamage()
+                    );
+
+                    if ($player->getHealth() <= 0) {
+                        $player->setHealth(0);
+                    }
+                }
+            }
+
+            $round->addAction($action);
+
+            $gameMapper->update($game);
         }
 
         return $this->json($game);

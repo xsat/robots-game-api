@@ -9,7 +9,6 @@ use App\Models\Game\Player;
 use App\Models\Game\Round;
 use App\Models\Game\Round\Action;
 use MongoDB\BSON\ObjectId;
-use MongoDB\BSON\UTCDateTime;
 use MongoDB\Client;
 use MongoDB\Model\BSONDocument;
 
@@ -75,9 +74,9 @@ class GameMapper
             'players' => array_map(
                 function (Player $player): array {
                     return [
-                        'playerId' => new ObjectId($player->getPlayerId()),
-                        'type' => $player->getHealth(),
-                        'winner' => $player->isWinner(),
+                        'player_id' => new ObjectId($player->getPlayerId()),
+                        'health' => $player->getHealth(),
+                        'is_winner' => $player->isWinner(),
                     ];
                 },
                 $game->getPlayers()
@@ -100,19 +99,12 @@ class GameMapper
                             $round->getActions()
                         ),
                         'is_ended' => $round->isEnded(),
-                        'date_started' => new UTCDateTime(
-                            $round->getDateStarted()
-                        ),
-                        'date_ended' => new UTCDateTime(
-                            $round->getDateStarted()
-                        ),
                     ];
                 },
                 $game->getRounds()
             ),
+            'is_started' => $game->isStarted(),
             'is_ended' => $game->isEnded(),
-            'date_started' => new UTCDateTime($game->getDateStarted()),
-            'date_ended' => new UTCDateTime($game->getDateStarted()),
         ];
     }
 
@@ -139,12 +131,72 @@ class GameMapper
     }
 
     /**
+     * @param string $playerId
+     *
+     * @return Game|null
+     */
+    public function findByPlayerId(string $playerId): ?Game
+    {
+        /** @var BSONDocument|null $result */
+        $result = $this->client->battle->games->findOne(
+            [
+                '$or' => [
+                    [
+                        'players.playerId' => new ObjectId($playerId),
+                        'is_ended' => false,
+                    ],
+                    [
+                        'is_started' => false
+                    ],
+                ]
+            ]
+        );
+
+        if (!$result) {
+            return null;
+        }
+
+        $game = new Game();
+        $this->assign($result, $game);
+
+        return $game;
+    }
+
+    /**
      * @param BSONDocument $document
      * @param Game $game
      */
     private function assign(BSONDocument $document, Game $game): void
     {
         $game->setGameId((string)$document['_id']);
+
+        foreach ($document['players'] as $playerDocument) {
+            $player = new Player();
+            $player->setPlayerId((string)$playerDocument['player_id']);
+            $player->setHealth($playerDocument['health']);
+            $player->setWinner($playerDocument['is_winner']);
+
+            $game->addPlayer($player);
+        }
+
+        foreach ($document['rounds'] as $roundDocument) {
+            $round = new Round();
+            $round->setNumber($roundDocument['number']);
+
+            foreach ($roundDocument['actions'] as $actionDocument) {
+                $action = new Action();
+                $action->setPlayerId((string)$actionDocument['player_id']);
+                $action->setType($actionDocument['type']);
+                $action->setDamage($actionDocument['damage']);
+                $action->setSpeed($actionDocument['speed']);
+
+                $round->addAction($action);
+            }
+
+            $game->addRound($round);
+        }
+
+        $game->setStarted($document['is_started']);
         $game->setEnded($document['is_ended']);
     }
 }

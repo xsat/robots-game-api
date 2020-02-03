@@ -31,17 +31,12 @@ class Game implements JsonSerializable
     /**
      * @var bool
      */
+    private bool $started = false;
+
+    /**
+     * @var bool
+     */
     private bool $ended = false;
-
-    /**
-     * @var string|null
-     */
-    private ?string $dateStarted = null;
-
-    /**
-     * @var string|null
-     */
-    private ?string $dateEnded = null;
 
     /**
      * @return string|null
@@ -68,11 +63,10 @@ class Game implements JsonSerializable
     }
 
     /**
-     * @param Player[] $players
+     * @param Player $player
      */
-    public function setPlayers(array $players): void
-    {
-        $this->players = $players;
+    public function addPlayer(Player $player): void {
+        $this->players[] = $player;
     }
 
     /**
@@ -84,27 +78,26 @@ class Game implements JsonSerializable
     }
 
     /**
-     * @param Round[] $rounds
+     * @param Round $round
      */
-    public function setRounds(array $rounds): void
-    {
-        $this->rounds = $rounds;
+    public function addRound(Round $round): void {
+        $this->rounds[] = $round;
     }
 
     /**
-     * @return string|null
+     * @return bool
      */
-    public function getDateStarted(): ?string
+    public function isStarted(): bool
     {
-        return $this->dateStarted;
+        return $this->started;
     }
 
     /**
-     * @param string|null $dateStarted
+     * @param bool $started
      */
-    public function setDateStarted(?string $dateStarted): void
+    public function setStarted(bool $started): void
     {
-        $this->dateStarted = $dateStarted;
+        $this->started = $started;
     }
 
     /**
@@ -124,33 +117,16 @@ class Game implements JsonSerializable
     }
 
     /**
-     * @return string|null
-     */
-    public function getDateEnded(): ?string
-    {
-        return $this->dateEnded;
-    }
-
-    /**
-     * @param string|null $dateEnded
-     */
-    public function setDateEnded(?string $dateEnded): void
-    {
-        $this->dateEnded = $dateEnded;
-    }
-
-    /**
      * @return array|null
      */
     public function jsonSerialize(): ?array
     {
         return [
             'gameId' => $this->getGameId(),
-            'players' => (new Items($this->players))->jsonSerialize(),
-            'rounds' => (new Items($this->rounds))->jsonSerialize(),
+            'players' => $this->players,
+            'rounds' => $this->rounds,
+            'isStarted' => $this->isStarted(),
             'isEnded' => $this->isEnded(),
-            'dateStarted' => $this->getDateStarted(),
-            'dateEnded' => $this->getDateEnded(),
         ];
     }
 }

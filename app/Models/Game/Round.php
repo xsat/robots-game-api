@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Models\Game;
 
 use App\Models\Game\Round\Action;
-use App\Models\Items;
 use JsonSerializable;
 
 /**
@@ -28,15 +27,6 @@ class Round implements JsonSerializable
      */
     private bool $ended = false;
 
-    /**
-     * @var string|null
-     */
-    private ?string $dateStarted = null;
-
-    /**
-     * @var string|null
-     */
-    private ?string $dateEnded = null;
 
     /**
      * @return int|null
@@ -63,11 +53,10 @@ class Round implements JsonSerializable
     }
 
     /**
-     * @param Action[] $actions
+     * @param Action $action
      */
-    public function setActions(array $actions): void
-    {
-        $this->actions = $actions;
+    public function addAction(Action $action): void {
+        $this->actions[] = $action;
     }
 
     /**
@@ -87,48 +76,14 @@ class Round implements JsonSerializable
     }
 
     /**
-     * @return string|null
-     */
-    public function getDateStarted(): ?string
-    {
-        return $this->dateStarted;
-    }
-
-    /**
-     * @param string|null $dateStarted
-     */
-    public function setDateStarted(?string $dateStarted): void
-    {
-        $this->dateStarted = $dateStarted;
-    }
-
-    /**
-     * @return string|null
-     */
-    public function getDateEnded(): ?string
-    {
-        return $this->dateEnded;
-    }
-
-    /**
-     * @param string|null $dateEnded
-     */
-    public function setDateEnded(?string $dateEnded): void
-    {
-        $this->dateEnded = $dateEnded;
-    }
-
-    /**
      * @return array|null
      */
     public function jsonSerialize(): ?array
     {
         return [
             'number' => $this->getNumber(),
-            'actions' => (new Items($this->actions))->jsonSerialize(),
+            'actions' => $this->actions,
             'isEnded' => $this->isEnded(),
-            'dateStarted' => $this->getDateStarted(),
-            'dateEnded' => $this->getDateEnded(),
         ];
     }
 }
