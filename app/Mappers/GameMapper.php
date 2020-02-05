@@ -137,7 +137,7 @@ class GameMapper
      *
      * @return Game|null
      */
-    public function findByPlayerId(string $playerId): ?Game
+    public function findNotStarted(string $playerId): ?Game
     {
         /** @var BSONDocument|null $result */
         $result = $this->client->battle->games->findOne(
@@ -149,6 +149,34 @@ class GameMapper
                     ],
                     [
                         'is_started' => false
+                    ],
+                ]
+            ]
+        );
+
+        if (!$result) {
+            return null;
+        }
+
+        $game = new Game();
+        $this->assign($result, $game);
+
+        return $game;
+    }
+
+    /**
+     * @param string $playerId
+     *
+     * @return Game|null
+     */
+    public function findByPlayerId(string $playerId): ?Game
+    {
+        /** @var BSONDocument|null $result */
+        $result = $this->client->battle->games->findOne(
+            [
+                '$or' => [
+                    [
+                        'players.player_id' => new ObjectId($playerId),
                     ],
                 ]
             ]

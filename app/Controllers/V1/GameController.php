@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controllers\V1;
 
 use App\Controllers\AbstractTokenController;
+use App\Exceptions\ForbiddenException;
+use App\Exceptions\NotFoundException;
 use App\Mappers\GameMapper;
 use App\Models\Game;
 use App\Models\Game\Player;
@@ -21,10 +23,10 @@ class GameController extends AbstractTokenController
     /**
      * @return Response
      */
-    public function play(): Response
+    public function start(): Response
     {
         $gameMapper = new GameMapper($this->client());
-        $game = $gameMapper->findByPlayerId(
+        $game = $gameMapper->findNotStarted(
             $this->player()->getPlayerId()
         );
 
@@ -51,46 +53,100 @@ class GameController extends AbstractTokenController
 
             $game->setStarted(count($game->getPlayers()) === 2);
             $gameMapper->update($game);
-        } elseif ($game->isStarted()) {
-            $round = $game->getLastRound();
-
-            if (!$round || $round->isEnded()) {
-                $round = new Round();
-                $game->addRound($round);
-            }
-
-            $action = $round->findAction($this->player()->getPlayerId());
-            $target = $game->findTarget($this->player()->getPlayerId());
-
-            if (!$action && $target) {
-                $action = new Action();
-                $action->setPlayerId($this->player()->getPlayerId());
-                $action->setTargetId($target->getPlayerId());
-                $action->setType('attack');
-                $action->setDamage(rand(1, 10));
-                $action->setSpeed(rand(1, 10));
-                $round->addAction($action);
-
-                $player = $game->findPlayer($target->getPlayerId());
-
-                if ($player) {
-                    $player->setHealth(
-                        $player->getHealth() - $action->getDamage()
-                    );
-
-                    if ($player->getHealth() <= 0) {
-                        $player->setHealth(0);
-                        $game->setEnded(true);
-                    }
-                }
-
-                $round->setEnded(
-                    count($game->getPlayers()) === count($round->getActions())
-                );
-            }
-
-            $gameMapper->update($game);
         }
+
+        return $this->json($game);
+    }
+
+    /**
+     * @return Response
+     *
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
+    public function play(): Response {
+        $gameMapper = new GameMapper($this->client());
+        $game = $gameMapper->findByPlayerId(
+            $this->player()->getPlayerId()
+        );
+
+        if (!$game) {
+            throw new NotFoundException('Game was not found.');
+        }
+
+        if (!$game->isStarted()) {
+            throw new ForbiddenException('Game was not started.');
+        }
+
+        if ($game->isEnded()) {
+            throw new ForbiddenException('Game was ended.');
+        }
+
+        $round = $game->getLastRound();
+
+        if (!$round || $round->isEnded()) {
+            $round = new Round();
+            $game->addRound($round);
+        }
+
+        $action = $round->findAction($this->player()->getPlayerId());
+        $target = $game->findTarget($this->player()->getPlayerId());
+
+        if (!$action && $target) {
+            $action = new Action();
+            $action->setPlayerId($this->player()->getPlayerId());
+            $action->setTargetId($target->getPlayerId());
+            $action->setType('attack');
+            $action->setDamage(rand(1, 10));
+            $action->setSpeed(rand(1, 10));
+            $round->addAction($action);
+
+            $player = $game->findPlayer($target->getPlayerId());
+
+            if ($player) {
+                $player->setHealth(
+                    $player->getHealth() - $action->getDamage()
+                );
+
+                if ($player->getHealth() <= 0) {
+                    $player->setHealth(0);
+                    $game->setEnded(true);
+                }
+            }
+
+            $round->setEnded(
+                count($game->getPlayers()) === count($round->getActions())
+            );
+        }
+
+        $gameMapper->update($game);
+
+        return $this->json($game);
+    }
+
+    /**
+     * @return Response
+     *
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
+    public function end(): Response
+    {
+        $gameMapper = new GameMapper($this->client());
+        $game = $gameMapper->findByPlayerId(
+            $this->player()->getPlayerId()
+        );
+
+        if (!$game) {
+            throw new NotFoundException('Game was not found.');
+        }
+
+        if ($game->isEnded()) {
+            throw new ForbiddenException('Game was already ended.');
+        }
+
+        $game->setEnded(true);
+        $gameMapper->update($game);
 
         return $this->json($game);
     }

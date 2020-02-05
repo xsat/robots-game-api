@@ -57,8 +57,17 @@ api_game_options:
   controller: App\Controllers\DefaultController::options
   methods: [OPTIONS]
 
-api_game_create:
+api_game_start:
   path: /v1/player/game
-  controller: App\Controllers\V1\GameController::play
+  controller: App\Controllers\V1\GameController::start
   methods: [POST]
 
+api_game_play:
+  path: /v1/player/game
+  controller: App\Controllers\V1\GameController::play
+  methods: [PUT]
+
+api_game_end:
+  path: /v1/player/game
+  controller: App\Controllers\V1\GameController::end
+  methods: [DELETE]
