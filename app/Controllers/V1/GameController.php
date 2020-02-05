@@ -141,10 +141,6 @@ class GameController extends AbstractTokenController
             throw new NotFoundException('Game was not found.');
         }
 
-        if ($game->isEnded()) {
-            throw new ForbiddenException('Game was already ended.');
-        }
-
         $game->setEnded(true);
         $gameMapper->update($game);
 

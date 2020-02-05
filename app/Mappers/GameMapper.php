@@ -111,28 +111,6 @@ class GameMapper
     }
 
     /**
-     * @param string $id
-     *
-     * @return Game|null
-     */
-    public function findById(string $id): ?Game
-    {
-        /** @var BSONDocument|null $result */
-        $result = $this->client->battle->games->findOne(
-            ['_id' => new ObjectId($id)]
-        );
-
-        if (!$result) {
-            return null;
-        }
-
-        $game = new Game();
-        $this->assign($result, $game);
-
-        return $game;
-    }
-
-    /**
      * @param string $playerId
      *
      * @return Game|null
@@ -148,7 +126,8 @@ class GameMapper
                         'is_ended' => false,
                     ],
                     [
-                        'is_started' => false
+                        'is_started' => false,
+                        'is_ended' => false,
                     ],
                 ]
             ]
@@ -174,11 +153,7 @@ class GameMapper
         /** @var BSONDocument|null $result */
         $result = $this->client->battle->games->findOne(
             [
-                '$or' => [
-                    [
-                        'players.player_id' => new ObjectId($playerId),
-                    ],
-                ]
+                'players.player_id' => new ObjectId($playerId),
             ]
         );
 
