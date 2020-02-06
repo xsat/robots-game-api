@@ -123,6 +123,7 @@ class GameMapper
                 '$or' => [
                     [
                         'players.player_id' => new ObjectId($playerId),
+                        'is_started' => false,
                         'is_ended' => false,
                     ],
                     [
