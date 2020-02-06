@@ -154,6 +154,8 @@ class GameMapper
         $result = $this->client->battle->games->findOne(
             [
                 'players.player_id' => new ObjectId($playerId),
+                'is_started' => true,
+                'is_ended' => false,
             ]
         );
 
