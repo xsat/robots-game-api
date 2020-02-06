@@ -78,9 +78,9 @@ class GameController extends AbstractTokenController
             throw new ForbiddenException('Game was not started.');
         }
 
-        if ($game->isEnded()) {
-            throw new ForbiddenException('Game was ended.');
-        }
+//        if ($game->isEnded()) {
+//            throw new ForbiddenException('Game was ended.');
+//        }
 
         $round = $game->getLastRound();
 
