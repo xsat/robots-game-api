@@ -25,7 +25,7 @@ class AuthController extends AbstractController
     public function login(): Response
     {
         $data = $this->data();
-        $player = (new PlayerMapper($this->client()))->findByUsername($data['username'] ?? '');
+        $player = (new PlayerMapper($this->database()))->findByUsername($data['username'] ?? '');
         if (!$player || !password_verify($data['password'] ?? '', $player->getPassword())) {
             throw new ValidationException(
                 [
@@ -45,7 +45,7 @@ class AuthController extends AbstractController
         $playerToken->setPlayerId($player->getPlayerId());
         $playerToken->setToken($playerToken->generateToken());
         $playerToken->setDateExpired(date('Y-m-d H:i:s', strtotime('+1 day')));
-        (new PlayerTokenMapper($this->client()))->create($playerToken);
+        (new PlayerTokenMapper($this->database()))->create($playerToken);
 
         return $this->json($playerToken);
     }

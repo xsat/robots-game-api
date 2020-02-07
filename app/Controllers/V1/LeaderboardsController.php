@@ -18,7 +18,7 @@ class LeaderboardsController extends AbstractController
      */
     public function list(): Response
     {
-        $playerMapper = new PlayerMapper($this->client());
+        $playerMapper = new PlayerMapper($this->database());
         $limit = (int)($this->get('limit') ?? 10);
         $offset = (int)($this->get('offset') ?? 0);
 

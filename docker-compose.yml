@@ -1,0 +1,40 @@
+version: "3.5"
+services:
+  php_fpm:
+    build: .
+    container_name: robots_fpm
+    working_dir: /usr/share/nginx/robots
+    networks:
+      - test-network
+    depends_on:
+      - mongo
+    volumes:
+      - ./:/usr/share/nginx/robots
+  nginx:
+    image: nginx:latest
+    container_name: robots_nginx
+    working_dir: /usr/share/nginx/robots
+    networks:
+      - test-network
+    ports:
+      - "8089:80"
+    links:
+      - php_fpm
+      - mongo
+    volumes:
+      - ./:/usr/share/nginx/robots
+      - ./docker/nginx/conf.d/default.conf:/etc/nginx/conf.d/default.conf
+  mongo:
+    image: mongo:latest
+    container_name: robots_mongo
+    ports:
+      - 27017:27017
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: xsat
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    networks:
+      - test-network
+networks:
+  test-network:
+    driver: bridge

@@ -58,7 +58,15 @@ class Application
         $this->loader = new YamlFileLoader(
             new FileLocator(__DIR__ . '/../config')
         );
-        $this->client = new Client();
+        $this->client = new Client(
+            'mongodb://127.0.0.1:27017/',
+            [
+                'username' => 'xsat',
+                'password' => '123456',
+                'replicaSet' => 'myReplicaSet',
+                'authSource' => 'admin',
+            ]
+        );
     }
 
     public function run(): void
@@ -101,7 +109,7 @@ class Application
              * @uses GameController::play
              */
             $controller = explode('::', $arguments['_controller']);
-            $controller[0] = new $controller[0]($this->request, $this->client);
+            $controller[0] = new $controller[0]($this->request, $this->client->selectDatabase('battle'));
             unset($arguments['_controller']);
             unset($arguments['_route']);
             $arguments = array_values($arguments);
@@ -142,7 +150,7 @@ class Application
     {
         $this->response = new JsonResponse(
             $this->getData($throwable),
-            $throwable->getCode() ?: 500
+            $throwable->getCode() >= 600 ? 500 :  $throwable->getCode()
         );
     }
 

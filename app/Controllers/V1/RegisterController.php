@@ -26,7 +26,7 @@ class RegisterController extends AbstractController
         $player = new Player();
         $player->setUsername($data['username']);
         $player->setPassword(password_hash($data['password'], PASSWORD_BCRYPT));
-        if (!(new PlayerMapper($this->client()))->create($player)) {
+        if (!(new PlayerMapper($this->database()))->create($player)) {
             throw new RuntimeException('Player was not created.');
         }
 
@@ -34,7 +34,7 @@ class RegisterController extends AbstractController
         $playerToken->setPlayer($player);
         $playerToken->setToken($playerToken->generateToken());
         $playerToken->setDateExpired(date('Y-m-d H:i:s', strtotime('+1 day')));
-        (new PlayerTokenMapper($this->client()))->create($playerToken);
+        (new PlayerTokenMapper($this->database()))->create($playerToken);
 
         return $this->json($playerToken);
     }

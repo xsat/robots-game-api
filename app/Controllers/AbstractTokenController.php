@@ -8,7 +8,7 @@ use App\Exceptions\ForbiddenException;
 use App\Mappers\PlayerMapper;
 use App\Mappers\PlayerTokenMapper;
 use App\Models\Player;
-use MongoDB\Client;
+use MongoDB\Database;
 use Symfony\Component\HttpFoundation\Request;
 
 /**
@@ -25,23 +25,23 @@ abstract class AbstractTokenController extends AbstractController
      * AbstractTokenController constructor.
      *
      * @param Request $request
-     * @param Client $client
+     * @param Database $database
      *
      * @throws ForbiddenException
      */
-    public function __construct(Request $request, Client $client)
+    public function __construct(Request $request, Database $database)
     {
-        parent::__construct($request, $client);
+        parent::__construct($request, $database);
 
         $authorization = $request->headers->get('Authorization', '');
 
         if (preg_match('#^Bearer ([^ ]+)$#isU', $authorization, $matches)) {
-            $playerToken = (new PlayerTokenMapper($client))->findByToken(
+            $playerToken = (new PlayerTokenMapper($database))->findByToken(
                 $matches[1] ?? ''
             );
 
             if ($playerToken) {
-                $this->player = (new PlayerMapper($client))->findById(
+                $this->player = (new PlayerMapper($database))->findById(
                     $playerToken->getPlayerId()
                 );
             }

@@ -7,7 +7,7 @@ namespace App\Mappers;
 use App\Models\PlayerToken;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
-use MongoDB\Client;
+use MongoDB\Database;
 use MongoDB\Model\BSONDocument;
 
 /**
@@ -16,18 +16,18 @@ use MongoDB\Model\BSONDocument;
 class PlayerTokenMapper
 {
     /**
-     * @var Client
+     * @var Database
      */
-    private Client $client;
+    private Database $database;
 
     /**
      * PlayerTokenMapper constructor.
      *
-     * @param Client $client
+     * @param Database $database
      */
-    public function __construct(Client $client)
+    public function __construct(Database $database)
     {
-        $this->client = $client;
+        $this->database = $database;
     }
 
     /**
@@ -37,7 +37,7 @@ class PlayerTokenMapper
      */
     public function create(PlayerToken $playerToken): bool
     {
-        $result = $this->client->battle->player_tokens->insertOne(
+        $result = $this->database->player_tokens->insertOne(
             $this->convert($playerToken)
         );
 
@@ -53,7 +53,7 @@ class PlayerTokenMapper
      */
     public function update(PlayerToken $playerToken): bool
     {
-        $result = $this->client->battle->player_tokens->updateOne(
+        $result = $this->database->player_tokens->updateOne(
             ['_id' => new ObjectId($playerToken->getPlayerTokenId())],
             ['$set' => $this->convert($playerToken)]
         );
@@ -88,7 +88,7 @@ class PlayerTokenMapper
     public function findByToken(string $token): ?PlayerToken
     {
         /** @var BSONDocument|null $result */
-        $result = $this->client->battle->player_tokens->findOne(
+        $result = $this->database->player_tokens->findOne(
             [
                 'token' => $token,
                 'date_expired' => [

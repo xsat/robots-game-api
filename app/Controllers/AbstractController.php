@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Controllers;
 
-use MongoDB\Client;
+use MongoDB\Database;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,20 +20,20 @@ abstract class AbstractController
     private Request $request;
 
     /**
-     * @var Client
+     * @var Database
      */
-    private Client $client;
+    private Database $database;
 
     /**
      * AbstractController constructor.
      *
      * @param Request $request
-     * @param Client $client
+     * @param Database $database
      */
-    public function __construct(Request $request, Client $client)
+    public function __construct(Request $request, Database $database)
     {
         $this->request = $request;
-        $this->client = $client;
+        $this->database = $database;
     }
 
     /**
@@ -58,11 +58,11 @@ abstract class AbstractController
     }
 
     /**
-     * @return Client
+     * @return Database
      */
-    protected function client(): Client
+    protected function database(): Database
     {
-        return $this->client;
+        return $this->database;
     }
 
     /**

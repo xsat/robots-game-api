@@ -23,7 +23,7 @@ class GameController extends AbstractTokenController
      */
     public function play(): Response
     {
-        $gameMapper = new GameMapper($this->client());
+        $gameMapper = new GameMapper($this->database());
         $game = $gameMapper->findByPlayerId(
             $this->player()->getPlayerId()
         );
@@ -36,7 +36,7 @@ class GameController extends AbstractTokenController
             $game = new Game();
             $game->addPlayer($player);
 
-            if (!(new GameMapper($this->client()))->create($game)) {
+            if (!(new GameMapper($this->database()))->create($game)) {
                 throw new RuntimeException('Game was not created.');
             }
         } elseif (!$game->isStarted()) {

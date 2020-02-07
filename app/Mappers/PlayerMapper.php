@@ -6,7 +6,7 @@ namespace App\Mappers;
 
 use App\Models\Player;
 use MongoDB\BSON\ObjectId;
-use MongoDB\Client;
+use MongoDB\Database;
 use MongoDB\Model\BSONDocument;
 
 /**
@@ -15,18 +15,20 @@ use MongoDB\Model\BSONDocument;
 class PlayerMapper
 {
     /**
-     * @var Client
+     * @var Database
      */
-    private Client $client;
+    private Database $database;
 
     /**
      * PlayerMapper constructor.
      *
-     * @param Client $client
+     * @param Database $database
      */
-    public function __construct(Client $client)
+    public function __construct(Database $database)
     {
-        $this->client = $client;
+        $this->database = $database;
+
+        var_dump($this->database->listCollections());exit;
     }
 
     /**
@@ -36,7 +38,7 @@ class PlayerMapper
      */
     public function create(Player $player): bool
     {
-        $result = $this->client->battle->players->insertOne(
+        $result = $this->database->players->insertOne(
             $this->convert($player)
         );
 
@@ -52,7 +54,7 @@ class PlayerMapper
      */
     public function update(Player $player): bool
     {
-        $result = $this->client->battle->players->updateOne(
+        $result = $this->database->players->updateOne(
             ['_id' => new ObjectId($player->getPlayerId())],
             ['$set' => $this->convert($player)]
         );
@@ -81,7 +83,7 @@ class PlayerMapper
     public function findById(string $id): ?Player
     {
         /** @var BSONDocument|null $result */
-        $result = $this->client->battle->players->findOne(
+        $result = $this->database->players->findOne(
             ['_id' => new ObjectId($id)]
         );
 
@@ -103,7 +105,7 @@ class PlayerMapper
     public function findByUsername(string $username): ?Player
     {
         /** @var BSONDocument|null $result */
-        $result = $this->client->battle->players->findOne(
+        $result = $this->database->players->findOne(
             ['username' => $username]
         );
 
@@ -125,7 +127,7 @@ class PlayerMapper
      */
     public function list(int $limit = 10, int $offset = 0): array
     {
-        $results = $this->client->battle->players->find(
+        $results = $this->database->players->find(
             [],
             [
                 'limit' => $limit,
@@ -149,7 +151,7 @@ class PlayerMapper
      */
     public function total(): int
     {
-        return $this->client->battle->players->countDocuments();
+        return $this->database->players->countDocuments();
     }
 
     /**

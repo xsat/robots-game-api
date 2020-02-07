@@ -32,7 +32,7 @@ class PlayerController extends AbstractTokenController
     {
         $player = $this->player();
         $player->setUsername('updated');
-        if (!(new PlayerMapper($this->client()))->update($player)) {
+        if (!(new PlayerMapper($this->database()))->update($player)) {
             throw new RuntimeException('Player was not updated.');
         }
 

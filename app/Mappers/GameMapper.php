@@ -9,7 +9,7 @@ use App\Models\Game\Player;
 use App\Models\Game\Round;
 use App\Models\Game\Round\Action;
 use MongoDB\BSON\ObjectId;
-use MongoDB\Client;
+use MongoDB\Database;
 use MongoDB\Model\BSONDocument;
 
 /**
@@ -18,18 +18,18 @@ use MongoDB\Model\BSONDocument;
 class GameMapper
 {
     /**
-     * @var Client
+     * @var Database
      */
-    private Client $client;
+    private Database $database;
 
     /**
      * GameMapper constructor.
      *
-     * @param Client $client
+     * @param Database $database
      */
-    public function __construct(Client $client)
+    public function __construct(Database $database)
     {
-        $this->client = $client;
+        $this->database = $database;
     }
 
     /**
@@ -39,7 +39,7 @@ class GameMapper
      */
     public function create(Game $game): bool
     {
-        $result = $this->client->battle->games->insertOne(
+        $result = $this->database->games->insertOne(
             $this->convert($game)
         );
 
@@ -55,7 +55,7 @@ class GameMapper
      */
     public function update(Game $game): bool
     {
-        $result = $this->client->battle->games->updateOne(
+        $result = $this->database->games->updateOne(
             ['_id' => new ObjectId($game->getGameId())],
             ['$set' => $this->convert($game)]
         );
@@ -118,7 +118,7 @@ class GameMapper
     public function findById(string $id): ?Game
     {
         /** @var BSONDocument|null $result */
-        $result = $this->client->battle->games->findOne(
+        $result = $this->database->games->findOne(
             ['_id' => new ObjectId($id)]
         );
 
@@ -140,7 +140,7 @@ class GameMapper
     public function findByPlayerId(string $playerId): ?Game
     {
         /** @var BSONDocument|null $result */
-        $result = $this->client->battle->games->findOne(
+        $result = $this->database->battle->games->findOne(
             [
                 '$or' => [
                     [
