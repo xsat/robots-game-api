@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Controllers\V1;
 
 use App\Controllers\AbstractTokenController;
+use App\Exceptions\ForbiddenException;
+use App\Exceptions\NotFoundException;
 use App\Mappers\GameMapper;
 use App\Models\Game;
 use App\Models\Game\Player;
@@ -21,10 +23,15 @@ class GameController extends AbstractTokenController
     /**
      * @return Response
      */
-    public function play(): Response
+    public function start(): Response
     {
+<<<<<<< HEAD
         $gameMapper = new GameMapper($this->database());
         $game = $gameMapper->findByPlayerId(
+=======
+        $gameMapper = new GameMapper($this->client());
+        $game = $gameMapper->findNotStarted(
+>>>>>>> 2e3ef554ee026c24466be4c0e58b9261f00e4dfe
             $this->player()->getPlayerId()
         );
 
@@ -51,7 +58,33 @@ class GameController extends AbstractTokenController
 
             $game->setStarted(count($game->getPlayers()) === 2);
             $gameMapper->update($game);
-        } elseif ($game->isStarted()) {
+        }
+
+        return $this->json($game);
+    }
+
+    /**
+     * @return Response
+     *
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
+    public function play(): Response
+    {
+        $gameMapper = new GameMapper($this->client());
+        $game = $gameMapper->findByPlayerId(
+            $this->player()->getPlayerId()
+        );
+
+        if (!$game) {
+            throw new NotFoundException('Game was not found.');
+        }
+
+        if (!$game->isStarted()) {
+            throw new ForbiddenException('Game was not started.');
+        }
+
+        if (!$game->isEnded()) {
             $round = $game->getLastRound();
 
             if (!$round || $round->isEnded()) {
@@ -91,6 +124,29 @@ class GameController extends AbstractTokenController
 
             $gameMapper->update($game);
         }
+
+        return $this->json($game);
+    }
+
+    /**
+     * @return Response
+     *
+     * @throws NotFoundException
+     * @throws ForbiddenException
+     */
+    public function end(): Response
+    {
+        $gameMapper = new GameMapper($this->client());
+        $game = $gameMapper->findByPlayerId(
+            $this->player()->getPlayerId()
+        );
+
+        if (!$game) {
+            throw new NotFoundException('Game was not found.');
+        }
+
+        $game->setEnded(true);
+        $gameMapper->update($game);
 
         return $this->json($game);
     }

@@ -111,15 +111,32 @@ class GameMapper
     }
 
     /**
-     * @param string $id
+     * @param string $playerId
      *
      * @return Game|null
      */
-    public function findById(string $id): ?Game
+    public function findNotStarted(string $playerId): ?Game
     {
         /** @var BSONDocument|null $result */
+<<<<<<< HEAD
         $result = $this->database->games->findOne(
             ['_id' => new ObjectId($id)]
+=======
+        $result = $this->client->battle->games->findOne(
+            [
+                '$or' => [
+                    [
+                        'players.player_id' => new ObjectId($playerId),
+                        'is_started' => false,
+                        'is_ended' => false,
+                    ],
+                    [
+                        'is_started' => false,
+                        'is_ended' => false,
+                    ],
+                ]
+            ]
+>>>>>>> 2e3ef554ee026c24466be4c0e58b9261f00e4dfe
         );
 
         if (!$result) {
@@ -142,15 +159,9 @@ class GameMapper
         /** @var BSONDocument|null $result */
         $result = $this->database->battle->games->findOne(
             [
-                '$or' => [
-                    [
-                        'players.player_id' => new ObjectId($playerId),
-                        'is_ended' => false,
-                    ],
-                    [
-                        'is_started' => false
-                    ],
-                ]
+                'players.player_id' => new ObjectId($playerId),
+                'is_started' => true,
+                'is_ended' => false,
             ]
         );
 
