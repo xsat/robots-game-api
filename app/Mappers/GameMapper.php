@@ -118,11 +118,7 @@ class GameMapper
     public function findNotStarted(string $playerId): ?Game
     {
         /** @var BSONDocument|null $result */
-<<<<<<< HEAD
         $result = $this->database->games->findOne(
-            ['_id' => new ObjectId($id)]
-=======
-        $result = $this->client->battle->games->findOne(
             [
                 '$or' => [
                     [
@@ -136,7 +132,6 @@ class GameMapper
                     ],
                 ]
             ]
->>>>>>> 2e3ef554ee026c24466be4c0e58b9261f00e4dfe
         );
 
         if (!$result) {

@@ -25,13 +25,8 @@ class GameController extends AbstractTokenController
      */
     public function start(): Response
     {
-<<<<<<< HEAD
         $gameMapper = new GameMapper($this->database());
-        $game = $gameMapper->findByPlayerId(
-=======
-        $gameMapper = new GameMapper($this->client());
         $game = $gameMapper->findNotStarted(
->>>>>>> 2e3ef554ee026c24466be4c0e58b9261f00e4dfe
             $this->player()->getPlayerId()
         );
 
@@ -71,7 +66,7 @@ class GameController extends AbstractTokenController
      */
     public function play(): Response
     {
-        $gameMapper = new GameMapper($this->client());
+        $gameMapper = new GameMapper($this->database());
         $game = $gameMapper->findByPlayerId(
             $this->player()->getPlayerId()
         );
@@ -136,7 +131,7 @@ class GameController extends AbstractTokenController
      */
     public function end(): Response
     {
-        $gameMapper = new GameMapper($this->client());
+        $gameMapper = new GameMapper($this->database());
         $game = $gameMapper->findByPlayerId(
             $this->player()->getPlayerId()
         );
