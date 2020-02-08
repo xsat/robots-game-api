@@ -75,15 +75,15 @@ class PlayerMapper
     }
 
     /**
-     * @param string $id
+     * @param string $playerId
      *
      * @return Player|null
      */
-    public function findById(string $id): ?Player
+    public function findByPlayerId(string $playerId): ?Player
     {
         /** @var BSONDocument|null $result */
         $result = $this->collection->findOne(
-            ['_id' => new ObjectId($id)]
+            ['_id' => new ObjectId($playerId)]
         );
 
         if (!$result) {

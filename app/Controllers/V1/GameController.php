@@ -25,14 +25,13 @@ class GameController extends AbstractTokenController
      */
     public function start(): Response
     {
+        $playerId = $this->player()->getPlayerId();
         $gameMapper = new GameMapper($this->database());
-        $game = $gameMapper->findNotStarted(
-            $this->player()->getPlayerId()
-        );
+        $game = $gameMapper->findNotStarted($playerId);
 
         if (!$game) {
             $player = new Player();
-            $player->setPlayerId($this->player()->getPlayerId());
+            $player->setPlayerId($playerId);
             $player->setHealth(100);
 
             $game = new Game();
@@ -42,11 +41,11 @@ class GameController extends AbstractTokenController
                 throw new RuntimeException('Game was not created.');
             }
         } elseif (!$game->isStarted()) {
-            $player = $game->findPlayer($this->player()->getPlayerId());
+            $player = $game->findPlayer($playerId);
 
             if (!$player) {
                 $player = new Player();
-                $player->setPlayerId($this->player()->getPlayerId());
+                $player->setPlayerId($playerId);
                 $player->setHealth(100);
                 $game->addPlayer($player);
             }
@@ -68,8 +67,9 @@ class GameController extends AbstractTokenController
      */
     public function play(string $gameId): Response
     {
+        $playerId = $this->player()->getPlayerId();
         $gameMapper = new GameMapper($this->database());
-        $game = $gameMapper->findById($gameId);
+        $game = $gameMapper->findByGameIdAndPlayerId($gameId, $playerId);
 
         if (!$game) {
             throw new NotFoundException('Game was not found.');
@@ -87,12 +87,12 @@ class GameController extends AbstractTokenController
                 $game->addRound($round);
             }
 
-            $action = $round->findAction($this->player()->getPlayerId());
-            $target = $game->findTarget($this->player()->getPlayerId());
+            $action = $round->findAction($playerId);
+            $target = $game->findTarget($playerId);
 
             if (!$action && $target) {
                 $action = new Action();
-                $action->setPlayerId($this->player()->getPlayerId());
+                $action->setPlayerId($playerId);
                 $action->setTargetId($target->getPlayerId());
                 $action->setType('attack');
                 $action->setDamage(rand(1, 10));
@@ -132,8 +132,9 @@ class GameController extends AbstractTokenController
      */
     public function end(string $gameId): Response
     {
+        $playerId = $this->player()->getPlayerId();
         $gameMapper = new GameMapper($this->database());
-        $game = $gameMapper->findById($gameId);
+        $game = $gameMapper->findByGameIdAndPlayerId($gameId, $playerId);
 
         if (!$game) {
             throw new NotFoundException('Game was not found.');

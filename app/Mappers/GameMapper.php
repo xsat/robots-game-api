@@ -112,15 +112,21 @@ class GameMapper
     }
 
     /**
-     * @param string $id
+     * @param string $gameId
+     * @param string $playerId
      *
      * @return Game|null
      */
-    public function findById(string $id): ?Game
-    {
+    public function findByGameIdAndPlayerId(
+        string $gameId,
+        string $playerId
+    ): ?Game {
         /** @var BSONDocument|null $result */
         $result = $this->collection->findOne(
-            ['_id' => new ObjectId($id)]
+            [
+                '_id' => new ObjectId($gameId),
+                'players.player_id' => new ObjectId($playerId),
+            ]
         );
 
         if (!$result) {

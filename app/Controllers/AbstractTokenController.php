@@ -41,7 +41,7 @@ abstract class AbstractTokenController extends AbstractController
             );
 
             if ($playerToken) {
-                $this->player = (new PlayerMapper($database))->findById(
+                $this->player = (new PlayerMapper($database))->findByPlayerId(
                     $playerToken->getPlayerId()
                 );
             }
