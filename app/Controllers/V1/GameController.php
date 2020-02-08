@@ -59,17 +59,17 @@ class GameController extends AbstractTokenController
     }
 
     /**
+     * @param string $gameId
+     *
      * @return Response
      *
-     * @throws NotFoundException
      * @throws ForbiddenException
+     * @throws NotFoundException
      */
-    public function play(): Response
+    public function play(string $gameId): Response
     {
         $gameMapper = new GameMapper($this->database());
-        $game = $gameMapper->findByPlayerId(
-            $this->player()->getPlayerId()
-        );
+        $game = $gameMapper->findById($gameId);
 
         if (!$game) {
             throw new NotFoundException('Game was not found.');
@@ -124,17 +124,16 @@ class GameController extends AbstractTokenController
     }
 
     /**
+     * @param string $gameId
+     *
      * @return Response
      *
      * @throws NotFoundException
-     * @throws ForbiddenException
      */
-    public function end(): Response
+    public function end(string $gameId): Response
     {
         $gameMapper = new GameMapper($this->database());
-        $game = $gameMapper->findByPlayerId(
-            $this->player()->getPlayerId()
-        );
+        $game = $gameMapper->findById($gameId);
 
         if (!$game) {
             throw new NotFoundException('Game was not found.');
