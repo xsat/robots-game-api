@@ -9,6 +9,7 @@ use App\Models\Game\Player;
 use App\Models\Game\Round;
 use App\Models\Game\Round\Action;
 use MongoDB\BSON\ObjectId;
+use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Model\BSONDocument;
 
@@ -18,9 +19,9 @@ use MongoDB\Model\BSONDocument;
 class GameMapper
 {
     /**
-     * @var Database
+     * @var Collection
      */
-    private Database $database;
+    private Collection $collection;
 
     /**
      * GameMapper constructor.
@@ -29,7 +30,7 @@ class GameMapper
      */
     public function __construct(Database $database)
     {
-        $this->database = $database;
+        $this->collection = $database->selectCollection('games');
     }
 
     /**
@@ -39,7 +40,7 @@ class GameMapper
      */
     public function create(Game $game): bool
     {
-        $result = $this->database->games->insertOne(
+        $result = $this->collection->insertOne(
             $this->convert($game)
         );
 
@@ -55,7 +56,7 @@ class GameMapper
      */
     public function update(Game $game): bool
     {
-        $result = $this->database->games->updateOne(
+        $result = $this->collection->updateOne(
             ['_id' => new ObjectId($game->getGameId())],
             ['$set' => $this->convert($game)]
         );
@@ -118,7 +119,7 @@ class GameMapper
     public function findById(string $id): ?Game
     {
         /** @var BSONDocument|null $result */
-        $result = $this->database->games->findOne(
+        $result = $this->collection->findOne(
             ['_id' => new ObjectId($id)]
         );
 
@@ -140,7 +141,7 @@ class GameMapper
     public function findNotStarted(string $playerId): ?Game
     {
         /** @var BSONDocument|null $result */
-        $result = $this->database->games->findOne(
+        $result = $this->collection->findOne(
             [
                 '$or' => [
                     [

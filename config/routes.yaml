@@ -62,6 +62,11 @@ api_game_start:
   controller: App\Controllers\V1\GameController::start
   methods: [POST]
 
+api_games_options:
+    path: /v1/player/game/{gameId}
+    controller: App\Controllers\DefaultController::options
+    methods: [OPTIONS]
+
 api_game_play:
   path: /v1/player/game/{gameId}
   controller: App\Controllers\V1\GameController::play

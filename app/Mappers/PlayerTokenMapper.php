@@ -7,6 +7,7 @@ namespace App\Mappers;
 use App\Models\PlayerToken;
 use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
+use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Model\BSONDocument;
 
@@ -16,9 +17,10 @@ use MongoDB\Model\BSONDocument;
 class PlayerTokenMapper
 {
     /**
-     * @var Database
+     * @var Collection
      */
-    private Database $database;
+    private Collection $collection;
+
 
     /**
      * PlayerTokenMapper constructor.
@@ -27,7 +29,7 @@ class PlayerTokenMapper
      */
     public function __construct(Database $database)
     {
-        $this->database = $database;
+        $this->collection = $database->selectCollection('player_tokens');
     }
 
     /**
@@ -37,7 +39,7 @@ class PlayerTokenMapper
      */
     public function create(PlayerToken $playerToken): bool
     {
-        $result = $this->database->player_tokens->insertOne(
+        $result = $this->collection->insertOne(
             $this->convert($playerToken)
         );
 
@@ -53,7 +55,7 @@ class PlayerTokenMapper
      */
     public function update(PlayerToken $playerToken): bool
     {
-        $result = $this->database->player_tokens->updateOne(
+        $result = $this->collection->updateOne(
             ['_id' => new ObjectId($playerToken->getPlayerTokenId())],
             ['$set' => $this->convert($playerToken)]
         );
@@ -88,7 +90,7 @@ class PlayerTokenMapper
     public function findByToken(string $token): ?PlayerToken
     {
         /** @var BSONDocument|null $result */
-        $result = $this->database->player_tokens->findOne(
+        $result = $this->collection->findOne(
             [
                 'token' => $token,
                 'date_expired' => [

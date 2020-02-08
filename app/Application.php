@@ -59,13 +59,13 @@ class Application
             new FileLocator(__DIR__ . '/../config')
         );
         $this->client = new Client(
-            'mongodb://127.0.0.1:27017/',
-            [
-                'username' => 'xsat',
-                'password' => '123456',
-                'replicaSet' => 'myReplicaSet',
-                'authSource' => 'admin',
-            ]
+//            'mongodb://127.0.0.1:27017/',
+//            [
+//                'username' => 'xsat',
+//                'password' => '123456',
+//                'replicaSet' => 'myReplicaSet',
+//                'authSource' => 'admin',
+//            ]
         );
     }
 
@@ -109,7 +109,12 @@ class Application
              * @uses GameController::play
              */
             $controller = explode('::', $arguments['_controller']);
-            $controller[0] = new $controller[0]($this->request, $this->client->selectDatabase('battle'));
+            $controller[0] = new $controller[0](
+                $this->request,
+                $this->client->selectDatabase(
+                    'battle'
+                )
+            );
             unset($arguments['_controller']);
             unset($arguments['_route']);
             $arguments = array_values($arguments);
@@ -150,7 +155,7 @@ class Application
     {
         $this->response = new JsonResponse(
             $this->getData($throwable),
-            $throwable->getCode() >= 600 ? 500 :  $throwable->getCode()
+            $this->getStatusCode($throwable)
         );
     }
 
@@ -168,6 +173,24 @@ class Application
         return [
             'type' => 'internal-server-error',
             'message' => $throwable->getMessage(),
+            'c' => get_class($throwable),
+            't' => $throwable->getTraceAsString(),
         ];
+    }
+
+    /**
+     * @param Throwable $throwable
+     *
+     * @return int
+     */
+    private function getStatusCode(Throwable $throwable): int
+    {
+        $code = $throwable->getCode();
+
+        if ($code <= 0 || $code > 599) {
+            return 500;
+        }
+
+        return $code;
     }
 }
