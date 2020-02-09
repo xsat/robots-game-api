@@ -77,6 +77,9 @@ class GameMapper
                     return [
                         'player_id' => new ObjectId($player->getPlayerId()),
                         'health' => $player->getHealth(),
+                        'condition' => $player->getCondition(),
+                        'position' => $player->getPosition(),
+                        'color' => $player->getColor(),
                         'is_winner' => $player->isWinner(),
                     ];
                 },
@@ -152,7 +155,6 @@ class GameMapper
                 '$or' => [
                     [
                         'players.player_id' => new ObjectId($playerId),
-                        'is_started' => false,
                         'is_ended' => false,
                     ],
                     [
@@ -185,6 +187,9 @@ class GameMapper
             $player = new Player();
             $player->setPlayerId((string)$playerDocument['player_id']);
             $player->setHealth($playerDocument['health']);
+            $player->setCondition($playerDocument['condition']);
+            $player->setPosition($playerDocument['position']);
+            $player->setColor($playerDocument['color']);
             $player->setWinner($playerDocument['is_winner']);
 
             $game->addPlayer($player);

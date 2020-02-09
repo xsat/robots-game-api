@@ -12,6 +12,18 @@ use JsonSerializable;
 class Player implements JsonSerializable
 {
     /**
+     * Positions
+     */
+    public const POSITION_LEFT = 'left';
+    public const POSITION_RIGHT = 'right';
+
+    /**
+     * Colors
+     */
+    public const COLOR_BLUE = 'blue';
+    public const COLOR_RED = 'red';
+
+    /**
      * @var string|null
      */
     private ?string $playerId = null;
@@ -20,6 +32,21 @@ class Player implements JsonSerializable
      * @var int
      */
     private int $health = 0;
+
+    /**
+     * @var int
+     */
+    private int $condition = 0;
+
+    /**
+     * @var string|null
+     */
+    private ?string $position = null;
+
+    /**
+     * @var string|null
+     */
+    private ?string $color = null;
 
     /**
      * @var bool
@@ -59,6 +86,54 @@ class Player implements JsonSerializable
     }
 
     /**
+     * @return int
+     */
+    public function getCondition(): int
+    {
+        return $this->condition;
+    }
+
+    /**
+     * @param int $condition
+     */
+    public function setCondition(int $condition): void
+    {
+        $this->condition = $condition;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getPosition(): ?string
+    {
+        return $this->position;
+    }
+
+    /**
+     * @param string|null $position
+     */
+    public function setPosition(?string $position): void
+    {
+        $this->position = $position;
+    }
+
+    /**
+     * @return string|null
+     */
+    public function getColor(): ?string
+    {
+        return $this->color;
+    }
+
+    /**
+     * @param string|null $color
+     */
+    public function setColor(?string $color): void
+    {
+        $this->color = $color;
+    }
+
+    /**
      * @return bool
      */
     public function isWinner(): bool
@@ -82,6 +157,9 @@ class Player implements JsonSerializable
         return [
             'playerId' => $this->getPlayerId(),
             'health' => $this->getHealth(),
+            'condition' => $this->getCondition(),
+            'color' => $this->getColor(),
+            'position' => $this->getPosition(),
             'isWinner' => $this->isWinner(),
         ];
     }

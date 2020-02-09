@@ -23,7 +23,6 @@ class Round implements JsonSerializable
      */
     private bool $ended = false;
 
-
     /**
      * @return Action[]
      */

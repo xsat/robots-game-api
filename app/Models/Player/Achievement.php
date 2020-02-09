@@ -57,11 +57,11 @@ class Achievement implements JsonSerializable
     }
 
     /**
-     * @param Condition[] $conditions
+     * @param Condition $condition
      */
-    public function setConditions(array $conditions): void
+    public function addConditions(Condition $condition): void
     {
-        $this->conditions = $conditions;
+        $this->conditions[] = $condition;
     }
 
     /**

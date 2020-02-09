@@ -7,11 +7,11 @@ namespace App\Controllers\V1;
 use App\Controllers\AbstractTokenController;
 use App\Exceptions\ForbiddenException;
 use App\Exceptions\NotFoundException;
+use App\Factory\ActionFactory;
+use App\Factory\PlayerFactory;
 use App\Mappers\GameMapper;
 use App\Models\Game;
-use App\Models\Game\Player;
 use App\Models\Game\Round;
-use App\Models\Game\Round\Action;
 use RuntimeException;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -30,12 +30,8 @@ class GameController extends AbstractTokenController
         $game = $gameMapper->findNotStarted($playerId);
 
         if (!$game) {
-            $player = new Player();
-            $player->setPlayerId($playerId);
-            $player->setHealth(100);
-
             $game = new Game();
-            $game->addPlayer($player);
+            (new PlayerFactory($game))->join($playerId);
 
             if (!(new GameMapper($this->database()))->create($game)) {
                 throw new RuntimeException('Game was not created.');
@@ -44,10 +40,7 @@ class GameController extends AbstractTokenController
             $player = $game->findPlayer($playerId);
 
             if (!$player) {
-                $player = new Player();
-                $player->setPlayerId($playerId);
-                $player->setHealth(100);
-                $game->addPlayer($player);
+                (new PlayerFactory($game))->join($playerId);
             }
 
             $game->setStarted(count($game->getPlayers()) === 2);
@@ -64,6 +57,7 @@ class GameController extends AbstractTokenController
      *
      * @throws ForbiddenException
      * @throws NotFoundException
+     * @throws RuntimeException
      */
     public function play(string $gameId): Response
     {
@@ -79,6 +73,8 @@ class GameController extends AbstractTokenController
             throw new ForbiddenException('Game was not started.');
         }
 
+        $players = count($game->getPlayers());
+
         if (!$game->isEnded()) {
             $round = $game->getLastRound();
 
@@ -91,30 +87,50 @@ class GameController extends AbstractTokenController
             $target = $game->findTarget($playerId);
 
             if (!$action && $target) {
-                $action = new Action();
-                $action->setPlayerId($playerId);
-                $action->setTargetId($target->getPlayerId());
-                $action->setType('attack');
-                $action->setDamage(rand(1, 10));
-                $action->setSpeed(rand(1, 10));
-                $round->addAction($action);
+                $actionFactory = new ActionFactory($round);
+                $targetId = $target->getPlayerId();
+                $damage = $actionFactory->attack($playerId, $targetId);
+                $round->setEnded($players === count($round->getActions()));
+                $targetPlayer = $game->findPlayer($targetId);
 
-                $player = $game->findPlayer($target->getPlayerId());
-
-                if ($player) {
-                    $player->setHealth(
-                        $player->getHealth() - $action->getDamage()
+                if (!$targetPlayer) {
+                    throw new RuntimeException(
+                        'Target player was not found.'
                     );
-
-                    if ($player->getHealth() <= 0) {
-                        $player->setHealth(0);
-                        $game->setEnded(true);
-                    }
                 }
 
-                $round->setEnded(
-                    count($game->getPlayers()) === count($round->getActions())
+                $targetPlayer->setCondition(
+                    $targetPlayer->getCondition() - $damage
                 );
+
+                if ($targetPlayer->getHealth() <= 0) {
+                    $actualPlayer = $game->findPlayer($playerId);
+
+                    if (!$actualPlayer) {
+                        throw new RuntimeException(
+                            'Actual player was not found.'
+                        );
+                    }
+
+                    $actualPlayer->setWinner(true);
+                    $actionFactory->victory($actualPlayer->getPlayerId());
+                }
+
+                if ($round->isEnded()) {
+                    $wins = 0;
+
+                    foreach ($game->getPlayers() as $gamePlayer) {
+                        if ($gamePlayer->isWinner()) {
+                            $wins++;
+                        }
+                    }
+
+                    if ($wins === $players) {
+                        $actionFactory->draw();
+                    }
+
+                    $game->setEnded($wins !== 0);
+                }
             }
 
             $gameMapper->update($game);

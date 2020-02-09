@@ -94,11 +94,11 @@ class Player implements JsonSerializable
     }
 
     /**
-     * @param Achievement[] $achievements
+     * @param Achievement $achievement
      */
-    public function setAchievements(array $achievements): void
+    public function addAchievement(Achievement $achievement): void
     {
-        $this->achievements = $achievements;
+        $this->achievements[] = $achievement;
     }
 
     /**

@@ -13,6 +13,14 @@ use JsonSerializable;
 class Action implements JsonSerializable
 {
     /**
+     * Types
+     */
+    public const TYPE_ATTACK = 'attack';
+    public const TYPE_MISS = 'miss';
+    public const TYPE_WON = 'won';
+    public const TYPE_DRAW = 'draw';
+
+    /**
      * @var string|null
      */
     private ?string $playerId = null;
@@ -28,14 +36,14 @@ class Action implements JsonSerializable
     private ?string $type = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $damage = 0;
+    private ?int $damage = null;
 
     /**
-     * @var int
+     * @var int|null
      */
-    private int $speed = 0;
+    private ?int $speed = null;
 
     /**
      * @return string|null
@@ -86,33 +94,33 @@ class Action implements JsonSerializable
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getDamage(): int
+    public function getDamage(): ?int
     {
         return $this->damage;
     }
 
     /**
-     * @param int $damage
+     * @param int|null $damage
      */
-    public function setDamage(int $damage): void
+    public function setDamage(?int $damage): void
     {
         $this->damage = $damage;
     }
 
     /**
-     * @return int
+     * @return int|null
      */
-    public function getSpeed(): int
+    public function getSpeed(): ?int
     {
         return $this->speed;
     }
 
     /**
-     * @param int $speed
+     * @param int|null $speed
      */
-    public function setSpeed(int $speed): void
+    public function setSpeed(?int $speed): void
     {
         $this->speed = $speed;
     }
