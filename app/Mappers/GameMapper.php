@@ -90,17 +90,26 @@ class GameMapper
                     return [
                         'actions' => array_map(
                             function (Action $action): array {
-                                return [
-                                    'player_id' => new ObjectId(
+                                $data = [];
+
+                                if ($action->getPlayerId() !== null) {
+                                    $data['player_id'] = new ObjectId(
                                         $action->getPlayerId()
-                                    ),
-                                    'target_id' => new ObjectId(
+                                    );
+                                }
+
+                                if ($action->getTargetId() !== null) {
+                                    $data['target_id'] = new ObjectId(
                                         $action->getTargetId()
-                                    ),
-                                    'type' => $action->getType(),
-                                    'damage' => $action->getDamage(),
-                                    'speed' => $action->getSpeed(),
-                                ];
+                                    );
+                                }
+
+                                return $data +
+                                    [
+                                        'type' => $action->getType(),
+                                        'damage' => $action->getDamage(),
+                                        'speed' => $action->getSpeed(),
+                                    ];
                             },
                             $round->getActions()
                         ),
@@ -200,8 +209,15 @@ class GameMapper
 
             foreach ($roundDocument['actions'] as $actionDocument) {
                 $action = new Action();
-                $action->setPlayerId((string)$actionDocument['player_id']);
-                $action->setTargetId((string)$actionDocument['target_id']);
+
+                if (isset($actionDocument['player_id'])) {
+                    $action->setPlayerId((string)$actionDocument['player_id']);
+                }
+
+                if (isset($actionDocument['target_id'])) {
+                    $action->setTargetId((string)$actionDocument['target_id']);
+                }
+
                 $action->setType($actionDocument['type']);
                 $action->setDamage($actionDocument['damage']);
                 $action->setSpeed($actionDocument['speed']);

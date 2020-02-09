@@ -71,6 +71,22 @@ class Game implements JsonSerializable
     }
 
     /**
+     * @return Player[]
+     */
+    public function getWinners(): array
+    {
+        $winners = [];
+
+        foreach ($this->players as $player) {
+            if ($player->isWinner()) {
+                $winners[] = $player;
+            }
+        }
+
+        return $winners;
+    }
+
+    /**
      * @param string $playerId
      *
      * @return Player|null

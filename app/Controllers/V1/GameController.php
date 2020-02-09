@@ -103,7 +103,7 @@ class GameController extends AbstractTokenController
                     $targetPlayer->getCondition() - $damage
                 );
 
-                if ($targetPlayer->getHealth() <= 0) {
+                if ($targetPlayer->getCondition() <= 0) {
                     $actualPlayer = $game->findPlayer($playerId);
 
                     if (!$actualPlayer) {
@@ -113,23 +113,20 @@ class GameController extends AbstractTokenController
                     }
 
                     $actualPlayer->setWinner(true);
-                    $actionFactory->victory($actualPlayer->getPlayerId());
                 }
 
                 if ($round->isEnded()) {
-                    $wins = 0;
+                    $winners = $game->getWinners();
 
-                    foreach ($game->getPlayers() as $gamePlayer) {
-                        if ($gamePlayer->isWinner()) {
-                            $wins++;
+                    if (count($winners) === $players) {
+                        $actionFactory->draw();
+                    } else {
+                        foreach ($winners as $winner) {
+                            $actionFactory->victory($winner->getPlayerId());
                         }
                     }
 
-                    if ($wins === $players) {
-                        $actionFactory->draw();
-                    }
-
-                    $game->setEnded($wins !== 0);
+                    $game->setEnded(count($winners) > 0);
                 }
             }
 
