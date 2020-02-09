@@ -38,7 +38,7 @@ class ActionFactory
         $action = new Action();
         $action->setPlayerId($playerId);
         $action->setTargetId($targetId);
-        $damage = rand(0, 50);
+        $damage = rand(0, 20);
 
         if ($damage) {
             $action->setType(Action::TYPE_ATTACK);
