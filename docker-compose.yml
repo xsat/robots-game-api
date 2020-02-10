@@ -30,11 +30,7 @@ services:
     ports:
       - 27017:27017
     restart: always
-    environment:
-      MONGO_INITDB_ROOT_USERNAME: xsat
-      MONGO_INITDB_ROOT_PASSWORD: 123456
     networks:
       - test-network
 networks:
   test-network:
-    driver: bridge

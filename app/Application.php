@@ -58,15 +58,7 @@ class Application
         $this->loader = new YamlFileLoader(
             new FileLocator(__DIR__ . '/../config')
         );
-        $this->client = new Client(
-//            'mongodb://127.0.0.1:27017/',
-//            [
-//                'username' => 'xsat',
-//                'password' => '123456',
-//                'replicaSet' => 'myReplicaSet',
-//                'authSource' => 'admin',
-//            ]
-        );
+        $this->client = new Client('mongodb://mongo:27017');
     }
 
     public function run(): void
