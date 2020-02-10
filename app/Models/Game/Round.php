@@ -14,6 +14,11 @@ class Round implements JsonSerializable
 {
 
     /**
+     * @var int|null
+     */
+    private ?int $number = null;
+
+    /**
      * @var Action[]
      */
     private array $actions = [];
@@ -22,6 +27,22 @@ class Round implements JsonSerializable
      * @var bool
      */
     private bool $ended = false;
+
+    /**
+     * @return int|null
+     */
+    public function getNumber(): ?int
+    {
+        return $this->number;
+    }
+
+    /**
+     * @param int|null $number
+     */
+    public function setNumber(?int $number): void
+    {
+        $this->number = $number;
+    }
 
     /**
      * @return Action[]
@@ -76,8 +97,8 @@ class Round implements JsonSerializable
     public function jsonSerialize(): ?array
     {
         return [
+            'number' => $this->getNumber(),
             'actions' => $this->actions,
-            'isEnded' => $this->isEnded(),
         ];
     }
 }

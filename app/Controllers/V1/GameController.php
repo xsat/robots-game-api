@@ -80,6 +80,7 @@ class GameController extends AbstractTokenController
 
             if (!$round || $round->isEnded()) {
                 $round = new Round();
+                $round->setNumber(count($game->getRounds()));
                 $game->addRound($round);
             }
 

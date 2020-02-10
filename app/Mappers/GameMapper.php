@@ -88,6 +88,7 @@ class GameMapper
             'rounds' => array_map(
                 function (Round $round): array {
                     return [
+                        'number' => $round->getNumber(),
                         'actions' => array_map(
                             function (Action $action): array {
                                 $data = [];
@@ -206,6 +207,7 @@ class GameMapper
 
         foreach ($document['rounds'] as $roundDocument) {
             $round = new Round();
+            $round->setNumber($roundDocument['number']);
 
             foreach ($roundDocument['actions'] as $actionDocument) {
                 $action = new Action();
