@@ -59,6 +59,13 @@ class Game implements JsonSerializable
      */
     public function getPlayers(): array
     {
+        usort(
+            $this->players,
+            function (Player $player): bool {
+                return $player->getPosition() === Player::POSITION_RIGHT;
+            }
+        );
+
         return $this->players;
     }
 
