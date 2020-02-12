@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace App\Exceptions;
 
-use App\Models\Items;
-use App\Models\Message;
+use App\Validations\MessagesInterface;
 use Exception;
 use JsonSerializable;
 use Throwable;
@@ -16,19 +15,19 @@ use Throwable;
 class ValidationException extends Exception implements JsonSerializable
 {
     /**
-     * @var Message[]
+     * @var MessagesInterface
      */
-    private array $messages = [];
+    private MessagesInterface $messages;
 
     /**
      * ValidationException constructor.
      *
-     * @param Message[] $messages
+     * @param MessagesInterface $messages
      * @param int $code
      * @param Throwable|null $previous
      */
     public function __construct(
-        array $messages = [],
+        MessagesInterface $messages,
         int $code = 400,
         Throwable $previous = null
     ) {
@@ -44,7 +43,7 @@ class ValidationException extends Exception implements JsonSerializable
     {
         return [
             'type' => 'validation',
-            'messages' => (new Items($this->messages))->jsonSerialize(),
+            'messages' => $this->messages->getMessages(),
         ];
     }
 }

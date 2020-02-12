@@ -8,8 +8,8 @@ use App\Controllers\AbstractController;
 use App\Exceptions\ValidationException;
 use App\Mappers\PlayerMapper;
 use App\Mappers\PlayerTokenMapper;
-use App\Models\Message;
 use App\Models\PlayerToken;
+use App\Validations\LoginValidation;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -25,20 +25,11 @@ class AuthController extends AbstractController
     public function login(): Response
     {
         $data = $this->data();
-        $player = (new PlayerMapper($this->database()))->findByUsername($data['username'] ?? '');
-        if (!$player || !password_verify($data['password'] ?? '', $player->getPassword())) {
-            throw new ValidationException(
-                [
-                    new Message(
-                        'username',
-                        'Your username can not be empty.'
-                    ),
-                    new Message(
-                        'password',
-                        'Your username or password is invalid.'
-                    )
-                ]
-            );
+        $player = (new PlayerMapper($this->database()))
+            ->findByUsername($data['username'] ?? '');
+        $loginValidation = new LoginValidation($player);
+        if (!$loginValidation->validate($data)) {
+            throw new ValidationException($loginValidation);
         }
 
         $playerToken = new PlayerToken();

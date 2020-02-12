@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Response;
 class PlayerController extends AbstractTokenController
 {
     /**
-     *
      * @return Response
      */
     public function show(): Response

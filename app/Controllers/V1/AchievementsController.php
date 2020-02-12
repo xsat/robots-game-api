@@ -13,7 +13,6 @@ use Symfony\Component\HttpFoundation\Response;
 class AchievementsController extends AbstractTokenController
 {
     /**
-     *
      * @return Response
      */
     public function show(): Response
