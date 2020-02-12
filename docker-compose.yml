@@ -10,6 +10,8 @@ services:
       - mongo
     volumes:
       - ./:/usr/share/nginx/robots
+    environment:
+      - MONGODB_URI=mongodb://mongo:27017
   nginx:
     image: nginx:latest
     container_name: robots_nginx

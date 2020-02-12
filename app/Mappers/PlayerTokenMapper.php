@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Mappers;
 
+use App\Helpers\MongoHelper;
 use App\Models\PlayerToken;
-use MongoDB\BSON\ObjectId;
 use MongoDB\BSON\UTCDateTime;
 use MongoDB\Collection;
 use MongoDB\Database;
@@ -20,7 +20,6 @@ class PlayerTokenMapper
      * @var Collection
      */
     private Collection $collection;
-
 
     /**
      * PlayerTokenMapper constructor.
@@ -56,7 +55,7 @@ class PlayerTokenMapper
     public function update(PlayerToken $playerToken): bool
     {
         $result = $this->collection->updateOne(
-            ['_id' => new ObjectId($playerToken->getPlayerTokenId())],
+            ['_id' => MongoHelper::objectId($playerToken->getPlayerTokenId())],
             ['$set' => $this->convert($playerToken)]
         );
 
@@ -71,7 +70,7 @@ class PlayerTokenMapper
     private function convert(PlayerToken $playerToken): array
     {
         return [
-            'player_id' => new ObjectId($playerToken->getPlayerId()),
+            'player_id' => MongoHelper::objectId($playerToken->getPlayerId()),
             'token' => $playerToken->getToken(),
             'date_generated' => new UTCDateTime(
                 null

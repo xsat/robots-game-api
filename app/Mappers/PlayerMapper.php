@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Mappers;
 
+use App\Helpers\MongoHelper;
 use App\Models\Player;
-use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Model\BSONDocument;
@@ -54,7 +54,7 @@ class PlayerMapper
     public function update(Player $player): bool
     {
         $result = $this->collection->updateOne(
-            ['_id' => new ObjectId($player->getPlayerId())],
+            ['_id' => MongoHelper::objectId($player->getPlayerId())],
             ['$set' => $this->convert($player)]
         );
 
@@ -83,7 +83,7 @@ class PlayerMapper
     {
         /** @var BSONDocument|null $result */
         $result = $this->collection->findOne(
-            ['_id' => new ObjectId($playerId)]
+            ['_id' => MongoHelper::objectId($playerId)]
         );
 
         if (!$result) {

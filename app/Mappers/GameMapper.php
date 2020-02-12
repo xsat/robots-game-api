@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace App\Mappers;
 
+use App\Helpers\MongoHelper;
 use App\Models\Game;
 use App\Models\Game\Player;
 use App\Models\Game\Round;
 use App\Models\Game\Round\Action;
-use MongoDB\BSON\ObjectId;
 use MongoDB\Collection;
 use MongoDB\Database;
 use MongoDB\Model\BSONDocument;
@@ -57,7 +57,7 @@ class GameMapper
     public function update(Game $game): bool
     {
         $result = $this->collection->updateOne(
-            ['_id' => new ObjectId($game->getGameId())],
+            ['_id' => MongoHelper::objectId($game->getGameId())],
             ['$set' => $this->convert($game)]
         );
 
@@ -75,7 +75,9 @@ class GameMapper
             'players' => array_map(
                 function (Player $player): array {
                     return [
-                        'player_id' => new ObjectId($player->getPlayerId()),
+                        'player_id' => MongoHelper::objectId(
+                            $player->getPlayerId()
+                        ),
                         'health' => $player->getHealth(),
                         'condition' => $player->getCondition(),
                         'position' => $player->getPosition(),
@@ -94,13 +96,13 @@ class GameMapper
                                 $data = [];
 
                                 if ($action->getPlayerId() !== null) {
-                                    $data['player_id'] = new ObjectId(
+                                    $data['player_id'] = MongoHelper::objectId(
                                         $action->getPlayerId()
                                     );
                                 }
 
                                 if ($action->getTargetId() !== null) {
-                                    $data['target_id'] = new ObjectId(
+                                    $data['target_id'] = MongoHelper::objectId(
                                         $action->getTargetId()
                                     );
                                 }
@@ -137,8 +139,8 @@ class GameMapper
         /** @var BSONDocument|null $result */
         $result = $this->collection->findOne(
             [
-                '_id' => new ObjectId($gameId),
-                'players.player_id' => new ObjectId($playerId),
+                '_id' => MongoHelper::objectId($gameId),
+                'players.player_id' => MongoHelper::objectId($playerId),
             ]
         );
 
@@ -164,7 +166,7 @@ class GameMapper
             [
                 '$or' => [
                     [
-                        'players.player_id' => new ObjectId($playerId),
+                        'players.player_id' => MongoHelper::objectId($playerId),
                         'is_ended' => false,
                     ],
                     [
