@@ -58,7 +58,7 @@ class Application
         $this->loader = new YamlFileLoader(
             new FileLocator(__DIR__ . '/../config')
         );
-        $this->client = new Client('mongodb://mongo:27017');
+        $this->client = new Client($_ENV['MONGODB_URI'] ?? 'mongodb://mongo:27017');
     }
 
     public function run(): void
